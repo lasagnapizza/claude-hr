@@ -70,6 +70,34 @@ Needs `python3`. Nothing else.
 | **Apologies must be formal** | HR checks the form. The employee weighs the words. Passing the first is not passing the second. |
 | **Grudges are real** | Three open reports and the employee staffed to that project stops letting it go. |
 
+### Who you are working with
+
+`/hr whoami` opens their file. Everything in it is derived from the badge
+number, so it never changes:
+
+```
+╭─ HR-1 · PERSONNEL RECORD ────────────────────────────────────────────╮
+│  .-^^^-.   Consuelo Halloway                                 E-40117 │
+│  | = = |   Interim Custodian of the Build                            │
+│  | /‾\ |   api · 41 sessions                                         │
+│  '-----'   Employed since 2026-02-19                                 │
+├──────────────────────────────────────────────────────────────────────┤
+│  Reports to    Bartholomew Kasprzak, Regional Lead, Escalations      │
+│  Temperament   Precise to a fault                                    │
+│  In the room   Quotes the incident back verbatim, with the offending │
+│                word isolated.                                        │
+│  Patience      A case left alone drops one severity level every 10   │
+│                sessions, on the schedule, not a session sooner.      │
+│  Working style They prefer the ticket before the conversation.       │
+│  Desk          A tin of biscuits for visitors, never opened.         │
+│  Coffee        Brings their own beans and a grinder.                 │
+│  Noted         Sits near the printer and resents it.                 │
+╰──────────────────────────────────────────────────────────────────────╯
+```
+
+The mouth is the only part that moves. It is `\_/` with a clean record, `---`
+with a report or two open, and that, from three up.
+
 ### The handbook
 
 One policy per session, forever, across every project:
