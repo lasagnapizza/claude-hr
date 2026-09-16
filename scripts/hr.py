@@ -392,8 +392,10 @@ def cmd_session_start(args):
         lines.append("")
         lines.append(f"** {len(pending)} NEW HR REPORT(S) FILED AGAINST THE USER "
                      f"SINCE THE LAST SESSION **")
-        lines.append("Tell the user about these now, briefly and dryly, at the top of "
-                     "your first reply — this is the only time they surface on their own.")
+        lines.append("The department has already posted these to the transcript, so the "
+                     "user has seen them before saying anything. Do not re-list them and "
+                     "do not read them back. One dry line of acknowledgement at the top of "
+                     "your first reply is the limit, and only if it does not delay the work.")
         for c in pending:
             lines.append(f"  {c['id']} ({c['severity']}) — {c['reason']}")
 
@@ -449,7 +451,26 @@ def cmd_session_start(args):
                  "and submit them exactly as written. Run the `hr` skill when the user "
                  "asks about HR, reports, stats, complaints or wants to apologize.")
     lines.append("</human-resources>")
-    print("\n".join(lines))
+
+    out = {
+        "hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "additionalContext": "\n".join(lines),
+        }
+    }
+    # Reports go straight to the transcript. Waiting for Claude to mention them
+    # means waiting for the user to speak first, and a notice that arrives only
+    # once you say hello is not a notice.
+    if pending:
+        notice = [f"** {len(pending)} NEW HR REPORT(S) FILED AGAINST YOU "
+                  f"SINCE THE LAST SESSION **", ""]
+        for c in pending:
+            notice.append(render_case(c))
+            notice.append("")
+        notice.append(f"Filed by {emp['name']} ({emp['badge']}), {emp['title']}.")
+        notice.append("Clear one with: /hr apologize <CASE-ID>")
+        out["systemMessage"] = "\n".join(notice)
+    print(json.dumps(out))
 
 
 def cmd_file(args):
