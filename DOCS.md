@@ -189,21 +189,25 @@ notice.
 Claude is told they have already been posted, and to acknowledge them in at most
 one dry line rather than reading them back.
 
-`systemMessage` carries one of four things, in order of precedence:
+`systemMessage` is printed every session, and has two parts.
+
+**Who is staffed here.** On a project's first session that is the staffing
+notice in full: badge photograph, name, badge number, title, temperament, and
+the fact that three rules you will not be shown are now in force. It is shown
+**once**, marked by an `introduced` timestamp on the project record — keyed on
+the record rather than the session count, because a `resume` does not advance
+that count and the introduction was being given again on every resume. Every
+session after it is one line: name, badge, title, project, session number.
+
+**Where the paperwork stands**, one of:
 
 1. **New reports** — every unseen open case, in full or collapsed to a line each.
 2. **Nothing new, something open** — the count, the oldest case and the highest
    standing one, plus anything open elsewhere in the office.
-3. **A project's first session** — the staffing notice: badge photograph, name,
-   badge number, title, temperament, and the fact that three rules you will not
-   be shown are now in force. A new folder used to open in complete silence,
-   which meant the employee had been assigned, the rules were live, and nobody
-   had been told.
-4. **Clean here, not clean everywhere** — the count of reports open against you
-   in other projects.
-
-A project with a clean record and nothing open anywhere says nothing at all.
-That silence is the reward.
+3. **Clean here, not clean everywhere** — the count open against you in other
+   projects.
+4. **Nothing anywhere** — said plainly, because silence reads as "no reports"
+   and as "the plugin is not installed" equally well.
 
 That is the only unprompted surfacing. After that, `/hr reports`.
 
