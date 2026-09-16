@@ -1,10 +1,8 @@
 # claude-hr
 
+**A grievance procedure for the machine.**
+
 Claude Code now has a Human Resources department.
-
-A grievance procedure for the machine.
-
----
 
 Every project folder you work in is staffed by one employee. They have a name, a
 badge number, a job title, and three **confidential workplace rules** that only
@@ -36,55 +34,58 @@ Needs `python3`. Nothing else.
 
 ## What happens
 
-**You get an employee.** Same folder, same person, forever. `~/www/api` is
-always Consuelo Halloway, Interim Custodian of the Build, and she remembers.
+| | |
+| --- | --- |
+| **You get an employee** | Same folder, same person, forever. `~/www/api` is always Consuelo Halloway, Interim Custodian of the Build, and she remembers. |
+| **Three rules stay secret** | You are not told what they are. You find out by breaking one. |
+| **The handbook grows** | Every new session ratifies one more company policy, permanently, across all your projects. |
+| **Reports surface once** | At the start of a later session, and then never again on their own. After that you have to go looking. |
+| **Apologies must be formal** | HR checks the form. The employee weighs the words. Passing the first is not passing the second. |
+| **Grudges are real** | Three open reports and the employee staffed to that project stops letting it go. |
 
-**The handbook grows.** Every new session ratifies one more company policy,
-permanently, across all your projects:
+### The handbook
 
-> R-004: The company does not recognize 'ASAP' as a time.
-> R-011: 'Perfect' and a list of corrections may not occupy the same sentence.
-> R-023: An employee told 'stop' shall be told what to stop.
-> R-038: Instructions containing the word 'etc.' shall be returned for completion.
+One policy per session, forever, across every project:
+
+> **R-004** — The company does not recognize 'ASAP' as a time.
+>
+> **R-011** — 'Perfect' and a list of corrections may not occupy the same sentence.
+>
+> **R-023** — An employee told 'stop' shall be told what to stop.
+>
+> **R-038** — Instructions containing the word 'etc.' shall be returned for completion.
 
 There are 59 waiting. You will meet them one at a time.
 
-**Three rules stay secret.** You are not told what they are. You find out by
-breaking one.
+### Apologies
 
-**Reports surface once**, at the start of a later session, and then never again
-on their own. After that you have to go looking.
-
-**Apologies must be formal.** HR checks. A shrug comes back:
+A shrug comes back:
 
 ```
-REJECTED — The apology must address Consuelo Halloway by name.
+RETURNED BY INTAKE — The apology must address Consuelo Halloway by name.
 Case HR-API-0007 remains open.
 ```
 
-**Three open reports and it gets awkward.** The employee staffed to that project
-stops letting it go. Roughly one reply in four, you get one dry sentence about it
-before they carry on with your actual work.
+Claude may not write it for you. It filed the complaint, so it is the last party
+that should be composing the apology for it — the words have to be yours. Clear
+intake and the employee still gets to reject it twice before HR overrules them.
 
-## Using it
+### Grudges
 
-```
-/hr                        your file: stats, then open reports
-/hr reports                the full personnel record
-/hr summary                every employee, every project, ranked by grudge
-/hr rules                  the handbook so far
-/hr whoami                 who you are actually working with
-/hr apologize HR-API-0007  Claude drafts it, HR rules on it
-```
+Roughly one reply in four, you get one dry sentence about an unresolved case
+before they carry on with your actual work. It never costs you the answer, and it
+stops the moment you apologize.
 
-## Fine print
+## Commands
 
-It is a joke with a filing system. It does not change how Claude writes code or
-answers anything. The persona is never announced and never gets in the way — the
-entire bit is that the paperwork is being maintained correctly in the background,
-by someone who has never been thanked.
-
-State is plain JSON in `~/.claude/hr`. Delete it to grant a general amnesty.
+| Command | What it shows |
+| --- | --- |
+| `/hr` | your file: stats, then open reports |
+| `/hr reports` | the full personnel record |
+| `/hr summary` | every employee, every project, ranked by grudge |
+| `/hr rules` | the handbook so far |
+| `/hr whoami` | who you are actually working with |
+| `/hr apologize HR-API-0007` | what HR requires; you write it, they rule on it |
 
 Full documentation: **[DOCS.md](DOCS.md)**
 
