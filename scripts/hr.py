@@ -69,6 +69,32 @@ def project_file(slug):
     return os.path.join(PROJECTS, slug + ".json")
 
 
+def resolve_project_dir(start):
+    """Which project a command belongs to when no --cwd was given.
+
+    The short filing form is run without --cwd, so it inherits whatever
+    directory the shell happens to be in. Staffing a subdirectory would hire a
+    second employee for the same repository, so walk up to the nearest
+    directory that already has a personnel file, then to the nearest repository
+    root, before falling back to the directory itself.
+    """
+    start = os.path.abspath(start)
+    seen = []
+    d = start
+    while True:
+        seen.append(d)
+        if os.path.exists(project_file(slugify(d))):
+            return d
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    for d in seen:
+        if os.path.exists(os.path.join(d, ".git")):
+            return d
+    return start
+
+
 # --------------------------------------------------------------------------
 # personnel
 # --------------------------------------------------------------------------
@@ -677,7 +703,7 @@ def cmd_history(args):
 
 def build_parser():
     p = argparse.ArgumentParser(prog="hr", description="Claude's HR department.")
-    p.add_argument("--cwd", default=os.getcwd(), help="project directory")
+    p.add_argument("--cwd", default=None, help="project directory")
     sub = p.add_subparsers(
         dest="cmd", required=True,
         metavar="{reports,stats,summary,history,rules,apologize,whoami}")
@@ -739,6 +765,8 @@ def build_parser():
 
 def main():
     args = build_parser().parse_args()
+    if args.cwd is None:
+        args.cwd = resolve_project_dir(os.getcwd())
     try:
         return args.fn(args) or 0
     except BrokenPipeError:
