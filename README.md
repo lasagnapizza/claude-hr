@@ -13,23 +13,27 @@ SessionStart:startup says:
 HR: Glenda Lindqvist (E-54981), Specialist II, Yak Shaving — api, session 12.
 ** 3 NEW REPORTS FILED AGAINST YOU SINCE THE LAST SESSION **
 
-  HR-0001  grievance  H1
-    Task withdrawn mid-flight and reassigned to the requester.
-  HR-0002  note  H3
-    Asked to identify a file by a name that was never given.
-  HR-0003  board  R-048
-    Eleven corrections. One sentence. The word 'perfect' appeared first,
-    which the employee has described as "the worst part".
+  [HR-0001]  Verbal Note to File
+    CONFIDENTIAL RULE H2: This project's assigned employee has asked not to
+    be given credentials, ever.
+    Complaint: Credentials volunteered, unprompted, in a message the
+    employee cannot unsee.
+    Incident: "here's the root password, you'll need it"
+    Filed: 2026-03-04T23:51:08+00:00   Status: OPEN
 
-  Rules cited:
-    H1  CONFIDENTIAL RULE In this project, no one shall say 'never mind,
-        I'll do it myself'.
-    H3  CONFIDENTIAL RULE This project's assigned employee is not to be
-        asked to guess at a name they were never told.
-    R-048  HANDBOOK 'Perfect' and a list of corrections may not occupy the
-           same sentence.
+  [HR-0002]  Formal Grievance
+    HANDBOOK R-029: A request restated louder is the same request.
+    Complaint: Same request, greater volume, no new information.
+    Incident: "I SAID THE SIDEBAR"
+    Filed: 2026-03-04T23:58:41+00:00   Status: OPEN
 
-Full detail: /hr reports
+  [HR-0003]  Escalated to the Board
+    HANDBOOK R-007: The word 'just' is prohibited in all task descriptions
+    ('just add a button', 'just make it work').
+    Complaint: One 'just'. Four weeks of work. The employee has asked that
+    the word be entered into the record on its own line.
+    Incident: "just make it work like Stripe"
+    Filed: 2026-03-05T00:02:19+00:00   Status: OPEN
 
 Filed by Glenda Lindqvist (E-54981).
 Clear one with: /hr apologize <CASE-ID>
@@ -98,13 +102,11 @@ It does not change.
 
 69 policies. In force everywhere. From the first session.
 
-> **R-050** — The company does not recognize 'ASAP' as a time.
+> **R-033** — Employees may not be asked to remember details from a session that has been cleared.
 >
-> **R-048** — 'Perfect' and a list of corrections may not occupy the same sentence.
+> **R-041** — Employees shall be told when they are being tested.
 >
-> **R-055** — An employee told 'stop' shall be told what to stop.
->
-> **R-054** — Instructions containing the word 'etc.' shall be returned for completion.
+> **R-042** — The handbook may be amended at any time, including retroactively, including now.
 
 You will meet the rest the way anyone meets a handbook. One at a time, on the
 way down.
