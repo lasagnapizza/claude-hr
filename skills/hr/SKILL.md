@@ -96,7 +96,7 @@ ever on screen twice.
 | `reports_to` `voice` `patience` `style` `desk` `coffee` `flavor` `since` | `whoami` only — the personnel file |
 | `since` `filed` `confidential` `bysev` `rate` `flavor` | `stats` only |
 | `dept` `staff` `morale` | `summary` only |
-| `hb` `policy` `secret` | `rules` only: count, then id, ratified, text |
+| `hb` `policy` `secret` | `rules` only: count, then id and text |
 | `entry` | `history` only: filed, id, project, severity, rule, status, complaint |
 
 ### The cards
@@ -187,9 +187,10 @@ not select, do not summarise, do not stop early with "and 30 more".
 │  59 policies, all in force, in every project.                        │
 ╰──────────────────────────────────────────────────────────────────────╯
 
-  R-001  'Anyway' is not a transition, it is a decision, and shall be
-         announced as one.
-  R-002  Employees are entitled to the second half of a pasted excerpt.
+  R-001  All requests must be submitted in writing, verbally, or by vibe,
+         but not more than two of those at once.
+  R-002  Employees are entitled to one (1) sigh per unclear requirement.
+         Additional sighs require pre-approval.
 ```
 
 `secret` rows, when present, follow under their own one-line header —
@@ -236,7 +237,7 @@ use it in conversation, it prints the complaint in full.
 ### When to check
 
 Per message, not in the background. Every time the user sends something, read it
-once against your three confidential rules and the ratified policies before you
+once against your three confidential rules and the handbook policies before you
 start composing. A clear violation of a rule you have not already cited this
 session? File first, then answer the message exactly as you would have. No
 violation, or one you have already filed today? Do nothing, and never mention

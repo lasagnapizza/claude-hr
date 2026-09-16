@@ -89,11 +89,10 @@ first weeks of a project most of the rules a complaint could cite did not exist
 yet, and the employee could not object to things the handbook plainly
 prohibited. A handbook you are issued a page at a time is not a handbook.
 
-The file is written on first read and kept in step with `HANDBOOK_POOL`
-afterwards. Matching is keyed on rule **text**, not pool index, so existing
-policies keep their id and date — cases cite them — and anything added to the
-pool later is appended with the next number. Policies are permanent, numbered
-`R-001` upward, and timestamped. Read them with `/hr rules`.
+Nothing is stored. The handbook is `HANDBOOK_POOL` in `scripts/hr_data.py`,
+read fresh every time: a policy's number is its position in the pool, `R-001`
+upward. Append to the pool and you have added a policy; nothing already
+numbered moves. Read them with `/hr rules`.
 
 ## The confidential rules
 
@@ -175,7 +174,7 @@ highest on file rather than from how many are on file. Numbers are never
 reused, and a number means one case no matter which project you are standing
 in.
 
-If `--rule` names something that is neither a confidential rule nor a ratified
+If `--rule` names something that is neither a confidential rule nor a handbook
 policy, the report is filed against "General conduct expectations, unwritten but
 widely understood."
 
@@ -338,10 +337,8 @@ are looked up across the whole office — a case you can see in the listing is o
 you can act on from wherever you are standing. They used to restart at 0001 in
 every project, so `0004` meant four different things and the short form had to
 be disambiguated by where you were standing; there is one docket now, so there
-is one sequence. Offices numbered the old way are renumbered in filing order on
-first read, with the original id kept on the record so an old reference still
-resolves. A listing that prints an id the next command rejects is a listing
-that lies.
+is one sequence. A listing that prints an id the next command rejects is a
+listing that lies.
 
 ## Output belongs to the card
 
@@ -377,7 +374,7 @@ narrowed to the project you are standing in.
 | `stats [--here]` | Department numbers, or this project's |
 | `summary` | Every employee across every project, ranked by open reports |
 | `history [--here]` | Chronological complaint log |
-| `rules` | The ratified handbook |
+| `rules` | The company handbook |
 | `whoami` | The personnel file: temperament, habits, who they report to |
 | `apologize <CASE-ID>` | What HR requires; you write it, Claude submits and rules |
 
@@ -400,17 +397,20 @@ payload on stdin (`cwd`, `source`, `session_id`) and falls back to `--cwd` and
 
 ```
 ~/.claude/hr/
-  handbook.json           { "rules": [ { id, text, ratified, ratified_by } ] }
   office.json             every employee, every case, one document
-  projects.pre-office/    the old per-project files, kept after migration
 ```
 
-One office, many employees. `office.json` is
-`{ "version": 2, "created": ..., "projects": { "<slug>": <project record> } }`
-and every command reads and writes that one document. An installation that
-still has a `projects/` directory is folded into the office the first time the
-script runs — case ids, closed matters and session counts carry over intact,
-and the old directory is renamed rather than deleted.
+One office, many employees, one file:
+`{ "created": ..., "projects": { "<slug>": <project record> } }`, read and
+written by every command. The handbook is not in it — that is derived from
+`HANDBOOK_POOL` on every read, so a policy's number is its position in the
+pool and there is nothing to keep in step.
+
+There is **no migration path and no second record format**. Employees are
+derived from the folder and the handbook from the pool, so the only thing
+`office.json` holds that cannot be recomputed is the complaints. If a file
+from an older version is in the way, delete `~/.claude/hr` and the department
+opens again from scratch.
 
 A project record inside it:
 
