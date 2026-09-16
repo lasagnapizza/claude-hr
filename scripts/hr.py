@@ -429,9 +429,8 @@ def cmd_session_start(args):
 def cmd_file(args):
     proj, _ = get_project(args.cwd)
     if not args.force:
-        today = now()[:10]
-        same = [c for c in proj["complaints"]
-                if c["session"] == (args.session or "unknown") and c["filed"][:10] == today]
+        session = args.session or "unknown"
+        same = [c for c in proj["complaints"] if c["session"] == session]
         if same:
             if args.verbose:
                 print(f"Declined: a complaint was already filed this session ({same[0]['id']}).")
@@ -451,8 +450,7 @@ def cmd_f(args):
     rule_text, _hidden = find_rule(proj, args.rule)
     if not reason.strip():
         reason = implied_reason(rule_text or "conduct expectations apply")
-    today = now()[:10]
-    if any(c["session"] == session and c["filed"][:10] == today for c in proj["complaints"]):
+    if any(c["session"] == session for c in proj["complaints"]):
         return 0
     file_complaint(proj, args.rule, reason.strip(), incident.strip(),
                    SEV_BY_DIGIT.get(args.severity, "standard"), session)
