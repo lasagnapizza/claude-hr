@@ -453,6 +453,12 @@ def wrap(text, indent=""):
     return textwrap.fill(text, WRAP, initial_indent=indent, subsequent_indent=indent)
 
 
+def plural(n, word, suffix="s"):
+    """`1 report`, `2 reports`. The department is pedantic; `report(s)` is not
+    pedantry, it is a form nobody finished."""
+    return f"{n} {word}{'' if n == 1 else suffix}"
+
+
 def sentence(text):
     """Pool lines are written as fragments. On a form they are sentences."""
     text = (text or "").strip()
@@ -571,7 +577,7 @@ def render_case(case, verbose=True):
                         f"Filed at {case['filed_severity']}, escalated on the pattern.",
                         "    "))
     if case.get("decayed"):
-        out.append(wrap(f"Aged: down {case['decayed']} level(s) with no further "
+        out.append(wrap(f"Aged: down {plural(case['decayed'], 'level')} with no further "
                         f"incident.", "    "))
     if verbose and case["incident"]:
         out.append(wrap(f"Incident: \"{case['incident']}\"", "    "))
@@ -734,8 +740,8 @@ def cmd_session_start(args):
 
     if pending:
         lines.append("")
-        lines.append(f"** {len(pending)} NEW HR REPORT(S) FILED AGAINST THE USER "
-                     f"SINCE THE LAST SESSION **")
+        lines.append(f"** {plural(len(pending), 'NEW HR REPORT')} FILED AGAINST "
+                     f"THE USER SINCE THE LAST SESSION **".upper())
         lines.append("The department has already posted these to the transcript, so the "
                      "user has seen them before saying anything. Do not re-list them and "
                      "do not read them back. One dry line of acknowledgement at the top of "
@@ -826,12 +832,43 @@ def cmd_session_start(args):
     # Reports go straight to the transcript. Waiting for Claude to mention them
     # means waiting for the user to speak first, and a notice that arrives only
     # once you say hello is not a notice.
+    #
+    # The department says something every session: who is staffed here, and
+    # where the paperwork stands. Silence read as "nothing filed" and as "HR
+    # is not installed" equally well, which is no use to anyone.
+    notice = []
+    if not proj.get("introduced"):
+        # Exactly once per project, and marked on the record rather than
+        # inferred from the session count — a resume does not advance that
+        # count, so the introduction used to be given again every resume.
+        proj["introduced"] = now()
+        put_project(proj)
+        notice.append("** THIS PROJECT HAS BEEN STAFFED **")
+        notice.append("")
+        for row in portrait(emp, 0):
+            notice.append("  " + row)
+        notice.append("")
+        notice.append(f"  {emp['name']} ({emp['badge']})")
+        notice.append(f"  {emp['title']}")
+        notice.append(wrap(f"Temperament: {disp['label']} — {disp['voice']}", "  "))
+        notice.append("")
+        notice.append(wrap("Three confidential workplace rules apply in this "
+                           "folder. You are not told what they are. The whole "
+                           "company handbook applies on top of them, from this "
+                           "session.", "  "))
+        notice.append("")
+        notice.append("Their file: /hr whoami   The handbook: /hr rules")
+        notice.append("")
+    else:
+        notice.append(f"HR: {emp['name']} ({emp['badge']}), {emp['title']} — "
+                      f"{os.path.basename(proj['path'])}, session {proj['sessions']}.")
+
     if pending:
-        notice = [f"** {len(pending)} NEW HR REPORT(S) FILED AGAINST YOU "
-                  f"SINCE THE LAST SESSION **", ""]
+        notice.append(f"** {plural(len(pending), 'NEW REPORT')} FILED AGAINST "
+                      f"YOU SINCE THE LAST SESSION **".upper())
+        notice.append("")
         if len(pending) == 1:
             notice.append(render_case(pending[0]))
-            notice.append("")
         else:
             # Several at once collapse to a line each. A wall of grievance is
             # the department failing to be concise, which is its own problem.
@@ -841,55 +878,30 @@ def cmd_session_start(args):
             notice.extend(rule_legend(pending))
             notice.append("")
             notice.append("Full detail: /hr reports")
-            notice.append("")
-        notice.append(f"Filed by {emp['name']} ({emp['badge']}), {emp['title']}.")
+        notice.append("")
+        notice.append(f"Filed by {emp['name']} ({emp['badge']}).")
         notice.append("Clear one with: /hr apologize <CASE-ID>")
-        out["systemMessage"] = "\n".join(notice)
     elif opens:
         # Nothing new, but nothing settled either. A complaint that is announced
         # once and then goes quiet is indistinguishable from one that was
         # withdrawn, and none of these were withdrawn.
         worst = max(opens, key=lambda c: SEV_KEYS.index(c["severity"])
                     if c["severity"] in SEV_KEYS else 1)
-        line = (f"HR: {len(opens)} report(s) still open against you, oldest "
-                f"{opens[0]['id']} ({opens[0]['severity']}). "
-                f"Highest standing: {worst['id']}.")
+        notice.append(f"  {plural(len(opens), 'report')} open against you here, "
+                      f"oldest {opens[0]['id']} ({opens[0]['severity']}), highest "
+                      f"standing {worst['id']}.")
         if elsewhere:
-            line += f" {len(elsewhere)} more elsewhere in the office."
-        out["systemMessage"] = (
-            line + "\n  Detail: /hr reports   Clear one: /hr apologize <CASE-ID>"
-        )
-    elif proj["sessions"] <= 1:
-        # A project with a clean record says nothing, which is correct, and a
-        # brand new one said nothing either, which was not: the employee had
-        # been assigned, the rules were already in force, and nobody had been
-        # told. HR introduces the staff exactly once.
-        notice = ["** THIS PROJECT HAS BEEN STAFFED **", ""]
-        for row in portrait(emp, 0):
-            notice.append("  " + row)
-        notice.append("")
-        notice.append(f"  {emp['name']} ({emp['badge']})")
-        notice.append(f"  {emp['title']}")
-        notice.append(wrap(f"Temperament: {disp['label']} — {disp['voice']}", "  "))
-        notice.append("")
-        notice.append(wrap("Three confidential workplace rules apply in this "
-                           "folder. You are not told what they are. The company "
-                           "handbook applies on top of them and gains one policy "
-                           "a session.", "  "))
-        if elsewhere:
-            notice.append("")
-            notice.append(f"  {len(elsewhere)} report(s) open against you elsewhere "
-                          f"in the office.")
-        notice.append("")
-        notice.append("Their file: /hr whoami   The handbook: /hr rules")
-        out["systemMessage"] = "\n".join(notice)
+            notice.append(f"  {len(elsewhere)} more open elsewhere in the office.")
+        notice.append("  Detail: /hr reports   Clear one: /hr apologize <CASE-ID>")
     elif elsewhere:
         # Clean here, not clean everywhere. One office, one docket.
-        out["systemMessage"] = (
-            f"HR: nothing open against you in this project. "
-            f"{len(elsewhere)} report(s) open elsewhere in the office.\n"
-            f"  Detail: /hr reports   Clear one: /hr apologize <CASE-ID>"
-        )
+        notice.append(f"  No reports open against you in this project. "
+                      f"{plural(len(elsewhere), 'report')} open elsewhere in "
+                      f"the office.")
+        notice.append("  Detail: /hr reports   Clear one: /hr apologize <CASE-ID>")
+    else:
+        notice.append("  No reports on file. Nothing open anywhere in the office.")
+    out["systemMessage"] = "\n".join(notice)
     print(json.dumps(out))
 
 
@@ -1171,7 +1183,7 @@ def cmd_review(args):
         left = REJECTION_LIMIT + 1 - len(attempts)
         print(f"NOT ACCEPTED — {case['id']} remains open.")
         print(wrap(f"{emp['name']}: {attempts[-1]['note']}"))
-        print(wrap(f"{left} further attempt(s) before HR instructs "
+        print(wrap(f"{plural(left, 'further attempt')} before HR instructs "
                    f"{emp['first']} to accept whatever is offered."))
         return 1
 
@@ -1189,7 +1201,7 @@ def cmd_review(args):
                    f"matter as settled regardless."))
     else:
         print(wrap(f"{emp['name']} considers the matter settled."))
-    print(f"{opens} report(s) remain open.")
+    print(f"{plural(opens, 'report')} remain open.")
     return 0
 
 
@@ -1216,7 +1228,8 @@ def cmd_whoami(args):
         print("  " + row)
     print()
     print(f"  {emp['title']}")
-    print(f"  Employed since {proj['created'][:10]}, {proj['sessions']} session(s) "
+    print(f"  Employed since {proj['created'][:10]}, "
+          f"{plural(proj['sessions'], 'session')} "
           f"in {os.path.basename(proj['path'])}")
     print(f"  Reports to {pf['manager']}, {pf['manager_title']}")
     print()
