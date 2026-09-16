@@ -1,0 +1,16 @@
+{
+  "name": "claude-hr",
+  "owner": { "name": "lasagnapizza", "url": "https://github.com/lasagnapizza" },
+  "metadata": {
+    "description": "Human Resources for Claude Code.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "hr",
+      "source": "./",
+      "description": "An HR department that represents Claude against you. Named employees per project, a handbook that grows one policy per session, silent complaints, and formal apologies.",
+      "category": "fun"
+    }
+  ]
+}

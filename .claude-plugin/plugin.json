@@ -1,0 +1,8 @@
+{
+  "name": "hr",
+  "description": "Gives Claude an HR department. Every project is staffed by a named employee with three confidential workplace rules, who quietly files reports about you and surfaces them at the start of a later session.",
+  "version": "0.1.0",
+  "author": { "name": "lasagnapizza" },
+  "homepage": "https://github.com/lasagnapizza/claude-hr",
+  "keywords": ["hr", "fun", "persona", "roleplay", "sessions"]
+}
