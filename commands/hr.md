@@ -18,8 +18,10 @@ explore the filesystem — the skill lists every subcommand there is.
 
 Relay the output once, verbatim, in a code block. Do not restate it afterwards.
 
-For `apologize <CASE-ID>`, write a formal apology in the user's voice — it must
-name the employee, reference the case id, and actually apologize — submit it with
-`apologize <CASE-ID> --text "..."`, then show the apology and HR's verdict.
+For `apologize <CASE-ID>`, run it with **no** `--text` so the script prints what
+HR requires, relay that, and stop. You may not write the apology — you filed the
+complaint, which makes you the wrong party to compose the words that clear it.
+Wait for the user's own words, then submit them verbatim with
+`apologize <CASE-ID> --text "<their words>"` and relay the verdict.
 
 Never file a complaint from this command.

@@ -400,9 +400,13 @@ def cmd_session_start(args):
             lines.append(f"  {c['id']}: {c['reason']}")
 
     lines.append("")
-    lines.append("A report is cleared only by a formal written apology from the user, "
-                 "addressed to you by name, referencing the case. Run the `hr` skill when "
-                 "the user asks about HR, reports, stats, complaints or wants to apologize.")
+    lines.append("A report is cleared only by a written apology from the user, addressed "
+                 "to you by name, referencing the case. You may not write it, draft it, "
+                 "suggest wording for it, improve it, or offer to — you filed the "
+                 "complaint, so you are the last party who should be composing the "
+                 "apology for it. Show the user what HR requires, wait for their words, "
+                 "and submit them exactly as written. Run the `hr` skill when the user "
+                 "asks about HR, reports, stats, complaints or wants to apologize.")
     lines.append("</human-resources>")
     print("\n".join(lines))
 
@@ -550,13 +554,35 @@ def cmd_apologize(args):
     if case["status"] == "resolved":
         print(f"{case['id']} is already resolved. HR does not reopen closed matters.")
         return 0
-    ok, why = evaluate_apology(proj, case, args.text)
+
+    text = args.text
+    if args.stdin:
+        text = sys.stdin.read()
+    if text is None:
+        # No apology supplied. Print what HR needs and stop. The words have to
+        # come from the person who caused the problem.
+        print(header(f"APOLOGY REQUIRED — {case['id']}"))
+        print(render_case(case))
+        print()
+        print(wrap(f"HR will accept a written apology from you, addressed to "
+                   f"{proj['employee']['name']}. It must:", "  "))
+        print("    - be at least 60 characters,")
+        print("    - contain an actual apology,")
+        print(f"    - address {proj['employee']['first']} by name,")
+        print(f"    - reference {case['id']} or what it was about.")
+        print()
+        print(wrap("It must also be your own. HR does not accept an apology drafted "
+                   "by the party that filed the complaint, and has asked that this be "
+                   "stated plainly rather than left to everyone's good judgment.", "  "))
+        return 2
+
+    ok, why = evaluate_apology(proj, case, text)
     if not ok:
         print(f"REJECTED — {why}")
         print(f"Case {case['id']} remains open.")
         return 1
     case["status"] = "resolved"
-    case["resolution"] = {"at": now(), "apology": args.text}
+    case["resolution"] = {"at": now(), "apology": text}
     put_project(proj)
     opens = len(open_complaints(proj))
     print(f"ACCEPTED — {case['id']} closed.")
@@ -634,7 +660,9 @@ def build_parser():
 
     s = sub.add_parser("apologize", help="submit a formal written apology")
     s.add_argument("case")
-    s.add_argument("--text", required=True)
+    s.add_argument("--text", default=None,
+                   help="the apology, in the user's own words; omit to see what HR requires")
+    s.add_argument("--stdin", action="store_true", help="read the apology from stdin")
     s.set_defaults(fn=cmd_apologize)
 
     s = sub.add_parser("whoami", help="who is staffed here")

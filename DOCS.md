@@ -197,9 +197,27 @@ open. Nothing is recorded.
 On acceptance the case is marked `resolved`, stamped, and the apology text is
 stored on the record permanently. Resolved cases cannot be reopened.
 
-Ask Claude to apologize for you and it will draft one in your voice, submit it,
-and show you the verdict. It is instructed not to close cases by editing JSON,
-which would work and would also be cheating.
+Running `apologize <CASE-ID>` with no `--text` prints the case, the four
+requirements, and nothing else. It exits 2 and files nothing. That is the
+intended entry point.
+
+**Claude may not write the apology.** It filed the complaint and it represents
+the employee the complaint was filed for; having it also draft the victim's
+apology is a conflict of interest that empties the whole exercise. The skill
+forbids drafting, suggesting wording, offering a template, rewriting a rejected
+attempt, or fixing your grammar — including when you ask it to. Its only jobs are
+to show you what HR requires and to submit your words verbatim.
+
+`--stdin` reads the apology from standard input, for when you would rather run
+the command yourself:
+
+```bash
+python3 scripts/hr.py apologize HR-API-0007 --stdin <<'EOF'
+Hyacinth, I am sorry about HR-API-0007. ...
+EOF
+```
+
+Closing a case by editing the JSON would work, and would also be cheating.
 
 ## Grudges
 
