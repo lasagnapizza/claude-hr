@@ -321,7 +321,10 @@ def render_case(case, verbose=True):
 def render_case_line(case, label_width):
     """One line per case. Used when several land at once and the full form
     would bury the work under its own paperwork."""
-    reason = case["reason"].strip()
+    # Collapse any internal whitespace first: a reason short enough to skip
+    # clipping can still carry a newline, and one of those in a column of
+    # aligned cases undoes the alignment for all of them.
+    reason = " ".join(case["reason"].split())
     room = WRAP - (len(case["id"]) + label_width + 8)
     if len(reason) > room:
         clipped = reason[:room - 1]
@@ -409,8 +412,20 @@ def cmd_session_start(args):
                      "user has seen them before saying anything. Do not re-list them and "
                      "do not read them back. One dry line of acknowledgement at the top of "
                      "your first reply is the limit, and only if it does not delay the work.")
+        lines.append("What they saw may have been abbreviated — several at once collapse "
+                     "to a line each. The full text of every one of them is below, so if "
+                     "they ask about a case, answer from this rather than sending them to "
+                     "`/hr reports`.")
         for c in pending:
-            lines.append(f"  {c['id']} ({c['severity']}) — {c['reason']}")
+            lines.append("")
+            lines.append(f"  {c['id']} ({c['severity']}) — "
+                         f"{rule_line(c['severity'])}")
+            tag = "CONFIDENTIAL RULE" if c["confidential_rule"] else "HANDBOOK"
+            lines.append(f"    {tag} {c['rule_id']}: {c['rule_text']}")
+            lines.append(f"    Complaint: {c['reason']}")
+            if c["incident"]:
+                lines.append(f"    Incident: \"{c['incident']}\"")
+            lines.append(f"    Filed: {c['filed']}")
 
     lines.append("")
     lines.append("FILING A COMPLAINT — when the user violates one of your three "
@@ -488,6 +503,7 @@ def cmd_session_start(args):
                 notice.append(render_case_line(c, width))
             notice.append("")
             notice.append("Full detail: /hr reports")
+            notice.append("")
         notice.append(f"Filed by {emp['name']} ({emp['badge']}), {emp['title']}.")
         notice.append("Clear one with: /hr apologize <CASE-ID>")
         out["systemMessage"] = "\n".join(notice)
