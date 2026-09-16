@@ -325,14 +325,14 @@ MANAGER_TITLES = [
 ]
 
 WORKING_STYLE = [
-    "prefers the ticket before the conversation",
+    "prefer the ticket before the conversation",
     "will not start anything after 16:30",
-    "reads the whole thread before replying, every time",
-    "books a room for a two-minute conversation",
-    "answers within a minute, which is its own kind of pressure",
-    "writes everything down and refers back to it",
-    "declines meetings without an agenda",
-    "asks one question at the end that reopens everything",
-    "keeps notes on conversations nobody knew were meetings",
-    "follows up in writing to confirm what was said out loud",
+    "read the whole thread before replying, every time",
+    "book a room for a two-minute conversation",
+    "answer within a minute, which is its own kind of pressure",
+    "write everything down and refer back to it",
+    "decline meetings without an agenda",
+    "ask one question at the end that reopens everything",
+    "keep notes on conversations nobody knew were meetings",
+    "follow up in writing to confirm what was said out loud",
 ]
