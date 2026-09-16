@@ -1,4 +1,4 @@
-# claude-hr
+# Human Resources for Claude Code
 
 **A grievance procedure for the machine.**
 
