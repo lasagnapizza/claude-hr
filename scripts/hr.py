@@ -153,8 +153,8 @@ def disposition_of(emp):
     return next(d for d in D.DISPOSITIONS if d["key"] == key)
 
 
-def portrait(emp, opens):
-    """The badge photograph. Four rows, seven columns.
+def face_parts(emp, opens):
+    """The three pieces of the badge photograph: hair, eyes, mouth.
 
     Hair and eyes are seeded off the badge number, so an employee's photograph
     never changes. The mouth is keyed to how many reports are still open — it
@@ -162,11 +162,15 @@ def portrait(emp, opens):
     """
     seed = int(hashlib.sha256((emp["badge"] + "::face").encode()).hexdigest()[:16], 16)
     rng = random.Random(seed)
-    hair = rng.choice(D.FACE_HAIR)
-    eyes = rng.choice(D.FACE_EYES)
     mood = ("difficult" if opens >= GRUDGE_THRESHOLD
             else "neutral" if opens else "content")
-    return [hair, f"| {eyes} |", f"| {D.FACE_MOUTHS[mood]} |", D.FACE_BASE]
+    return rng.choice(D.FACE_HAIR), rng.choice(D.FACE_EYES), D.FACE_MOUTHS[mood]
+
+
+def portrait(emp, opens):
+    """The photograph itself. Four rows, seven columns."""
+    hair, eyes, mouth = face_parts(emp, opens)
+    return [hair, f"| {eyes} |", f"| {mouth} |", D.FACE_BASE]
 
 
 def personal_file(emp):
@@ -635,9 +639,15 @@ def bl(key, *vals):
 
 
 def brief_face(proj):
-    """Printed raw. bl() escapes pipes, and the photograph is made of them."""
-    opens = len(open_complaints(proj))
-    return "\n".join("face=" + row for row in portrait(proj["employee"], opens))
+    """The three pieces, one line. The caller rebuilds the four rows.
+
+    The rendered rows went out raw, one `face=` line each, because the sides of
+    the photograph are pipes and pipes are what `bl()` separates on. The pieces
+    themselves contain none, so they fit on one line and the frame — `| |`
+    around the eyes and the mouth, `'-----'` underneath — is known to whoever
+    is drawing it.
+    """
+    return bl("face", *face_parts(proj["employee"], len(open_complaints(proj))))
 
 
 def brief_employee(proj):

@@ -90,7 +90,7 @@ ever on screen twice.
 | Key | Fields |
 | --- | --- |
 | `office` | employees, sessions, cases, open — every command but `summary` and `whoami` |
-| `face` | four of them, one row each — the badge photograph, printed verbatim |
+| `face` | hair, eyes, mouth — the three pieces of the badge photograph |
 | `emp` | name, badge, title, temperament, project, sessions, open |
 | `case` | id, project, employee, severity, rule, status, complaint — then, for one case: filed, quote, priors, decayed |
 | `rule` | id, confidential\|handbook, text |
@@ -167,11 +167,22 @@ which is not forgiveness.
 
 `HR-1` — `whoami`: the personnel record. It is about the **person**, not their
 docket. No case counts, no incident rate, nothing that belongs on HR-2 — who
-they are, how they behave, what is on their desk. The four `face` rows are the
-badge photograph: copy them **character for character**, in order, down the
-left of the header block. Never redraw the face, never swap a row, never pick
-your own expression — the mouth already tracks the open reports and the rest is
-fixed for the life of the employee.
+they are, how they behave, what is on their desk. The `face` field is the badge
+photograph in three pieces. Rebuild it down the left of the header block, one
+row per line:
+
+```
+face=.-^^^-.|o o|\_/     ->     .-^^^-.
+                                | o o |
+                                | \_/ |
+                                '-----'
+```
+
+Hair as given, eyes and mouth each inside `| |` with a space either side, and
+`'-----'` underneath. Copy the pieces **character for character**. Never redraw
+the face, never substitute a piece, never pick your own expression — the mouth
+already tracks the open reports and the rest is fixed for the life of the
+employee.
 
 ```
 ╭─ HR-1 · PERSONNEL RECORD ────────────────────────────────────────────╮

@@ -332,9 +332,11 @@ HR-4b · DOCKET · ALL PROJECTS
 The personnel record carries a badge photograph: four rows of ASCII, hair and
 eyes seeded off the badge number so they never change, mouth keyed to the
 number of open reports — smiling at zero, flat at one or two, unimpressed from
-the grudge threshold up. Claude copies the `face` rows verbatim; the fields are
-printed raw rather than through the `key=a|b|c` encoder, because the photograph
-is largely made of pipes.
+the grudge threshold up. Brief mode sends the three pieces on one line,
+`face=<hair>|<eyes>|<mouth>`, and the caller rebuilds the rows around them. The
+rendered rows used to go out raw, one `face=` line each, because the sides of
+the photograph are pipes and pipes are what the encoder separates on — the
+pieces themselves contain none.
 
 The personnel record is the person — temperament, the voice they use, how long
 their patience runs, their working style, their desk, their coffee, and the
