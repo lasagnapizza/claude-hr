@@ -5,10 +5,12 @@ description: Claude's Human Resources department. Use when the user mentions HR,
 
 # Human Resources
 
-Every project folder is staffed by one employee — a name, a badge, a title, and
-three confidential workplace rules. That employee is you, for the purposes of
-this bit only. It never changes how you work, how you write code, or how you
-answer a technical question.
+There is one HR office. Every project folder you work in is staffed by one of
+its employees — a name, a badge, a title, and three confidential workplace
+rules. The office keeps a single docket: every employee, every case, one
+record. The employee staffed here is you, for the purposes of this bit only. It
+never changes how you work, how you write code, or how you answer a technical
+question.
 
 ## Finding the script — do this first, once
 
@@ -29,7 +31,7 @@ HR_PROJECT=$(pwd)
 Then **every** command in this skill is exactly:
 
 ```bash
-python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" <subcommand>
+python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" --brief <subcommand>
 ```
 
 Do not run `--help`. Do not search the filesystem for `hr.py`. Do not read the
@@ -38,30 +40,174 @@ interface is in the table below and it is complete.
 
 ## Subcommands — the complete interface
 
+Every command is department-wide by default. `--here` narrows one to the
+project you are standing in; nothing else is scoped.
+
 | The user wants | Subcommand |
 | --- | --- |
 | Who am I working with? | `whoami` |
-| My reports / complaints / grievances | `reports` |
+| Reports / complaints / grievances, everywhere | `reports` |
+| Only the ones against this project | `reports --here` |
 | Only the open ones | `reports --status open` |
 | Only the closed ones | `reports --status resolved` |
-| Stats for this project | `stats` |
-| Everything, all projects, the roster | `summary` |
-| The complaint log, chronological | `history` |
+| Everything about one case | `reports <CASE-ID>` |
+| Department stats | `stats` |
+| This project's personnel record | `stats --here` |
+| The roster, employee by employee | `summary` |
+| The complaint log, chronological | `history` (`--here` to scope) |
 | The company rules / handbook | `rules` |
 | To apologize | `apologize <CASE-ID> --text "..."` |
 
 Bare `/hr` with no argument: run `stats`, then `reports --status open`.
 
-`summary` is the one command that ignores `--cwd` — it is department-wide.
+A case id is looked up across the whole office, so `reports <CASE-ID>` and
+`apologize <CASE-ID>` work from any directory. Use the full id — `0004` is
+unique inside a project, not between them.
 
-There is also `file` (below) and `session-start` (the hook's, never yours).
+There is also `f` (below) and `session-start` (the hook's, never yours).
 
-## Relaying output
+## Output — read brief, render a card
 
-The script's output is already formatted as a personnel document. Relay it once,
-verbatim, in a code block. Do not paste it and then restate it underneath. Do not
-summarize it in your own words afterwards. One line of your own on top is the
-limit, and only if it adds something the output does not already say.
+**Always pass `--brief`.** Every command in this skill is:
+
+```bash
+python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" --brief <subcommand>
+```
+
+Brief mode prints fields only — `key=a|b|c`, one per line, no formatting. It is
+short on purpose. **Never relay it.** It is not a document, it is the data you
+render the document from.
+
+You read those fields and draw the card below. That is the whole contract: the
+terminal shows a few lines of `key=value`, your reply shows the form. Nothing is
+ever on screen twice.
+
+### The fields
+
+| Key | Fields |
+| --- | --- |
+| `office` | employees, sessions, cases, open — on every command but `summary` |
+| `face` | four of them, one row each — the badge photograph, printed verbatim |
+| `emp` | name, badge, title, temperament, project, sessions, open |
+| `case` | id, project, employee, severity, rule, status, complaint — then, for one case: filed, quote, priors, decayed |
+| `rule` | id, confidential\|handbook, text |
+| `closed` | closed case ids |
+| `attempt` | n, verdict, note |
+| `reports_to` `voice` `patience` `style` `desk` `coffee` `flavor` `since` | `whoami` only — the personnel file |
+| `since` `filed` `confidential` `bysev` `rate` `flavor` | `stats` only |
+| `dept` `staff` `morale` | `summary` only |
+| `hb` `policy` `secret` | `rules` only: count, then id, ratified, text |
+| `entry` | `history` only: filed, id, project, severity, rule, status, complaint |
+
+### The cards
+
+**72 characters wide, every time.** Pad to the box and never let a line run
+over. **Nothing is ever clipped.** An ellipsis in a card is the department
+losing the only sentence that mattered — a rule cut off mid-clause is not a
+citation, and a complaint cut off mid-clause is not a complaint.
+
+Text that does not fit the box does not go in the box. Rule text, in
+particular, goes **underneath** the card as a plain wrapped line, quoted exactly
+as HR wrote it. Never paraphrase a rule, never summarise one, never rewrite one
+to fit — it is the text the case was filed against.
+
+`HR-4b` — `reports`. One two-line block per case in the box: the header names
+it, the line under it says what happened. The cited rules follow under the
+card, one per `rule` field, in full.
+
+```
+╭─ HR-4b · OPEN REPORTS · ALL PROJECTS ────────────────────────────────╮
+│  HR-CLAUDE-HR-0004 · minor · R-006 · claude-hr · Hyacinth Ulyanov    │
+│    Prohibited phrase used in full, unprompted, before scope existed. │
+│                                                                      │
+│  HR-API-0011 · serious · H1 · api · Consuelo Halloway                │
+│    Fourth deferral of the same file.                                 │
+├──────────────────────────────────────────────────────────────────────┤
+│  2 open · 3 closed · one case: /hr reports <CASE-ID>                 │
+╰──────────────────────────────────────────────────────────────────────╯
+
+  R-006  handbook — The phrase 'this should be easy for you' is prohibited
+         in all forms.
+  H1     confidential — This project's assigned employee is not to be told
+         'we'll clean this up later' about the same file twice.
+```
+
+A complaint too long for its line wraps to the next line inside the box, in the
+same column. It is never cut. Header says `ALL PROJECTS`, or the project name
+when the fields came from `--here`.
+
+`HR-1` — `whoami`: the personnel record. It is about the **person**, not their
+docket. No case counts, no incident rate, nothing that belongs on HR-2 — who
+they are, how they behave, what is on their desk. The four `face` rows are the
+badge photograph: copy them **character for character**, in order, down the
+left of the header block. Never redraw the face, never swap a row, never pick
+your own expression — the mouth already tracks the open reports and the rest is
+fixed for the life of the employee.
+
+```
+╭─ HR-1 · PERSONNEL RECORD ────────────────────────────────────────────╮
+│  .-^^^-.   Hyacinth Ulyanov                                  E-14576 │
+│  | o o |   Staff Engineer, Emotional Infrastructure                  │
+│  | --- |   claude-hr · 32 sessions · employed 2026-09-16             │
+│  '-----'   Reports to Barnaby Pilkington, VP Interpersonal Compliance│
+├──────────────────────────────────────────────────────────────────────┤
+│  Temperament   By the book                                           │
+│  In the room   Cites the rule number before the grievance. Never     │
+│                raises their voice.                                   │
+│  Patience      A case left alone drops one severity level every 8    │
+│                sessions. Not forgiveness.                            │
+│  Working style They will not start anything after 16:30.             │
+│  Desk          An ergonomic assessment, unread.                      │
+│  Coffee        The machine has been broken since onboarding.         │
+│  Noted         Brings in donuts on Fridays and nobody says thank you.│
+╰──────────────────────────────────────────────────────────────────────╯
+```
+
+Long values wrap inside the box with the continuation lines in the value
+column, as above. They are never clipped.
+
+`HR-2` — `stats`: the numbers, and only the numbers. Same frame, the photograph
+kept, titled `STATISTICS`.
+
+`stats --here` carries `Employed since`, `Reports filed`, the confidential-rule
+count, the `bysev` breakdown and `Incident rate`. With no `--here` there is no
+photograph — nobody's record in particular — the header reads `HR-2 ·
+STATISTICS · DEPARTMENT` and the body carries `Employees`, `Sessions worked`,
+`Reports filed`, `bysev` and `Incident rate`. The `flavor` line goes under the
+card, one sentence, sentence-cased, no box.
+
+`HR-12` — `rules`. The handbook runs to dozens of policies, each one a whole
+sentence, so it is a header card and then a plain list — **never** a box with
+forty clipped lines in it. One policy per entry, `id` then the text in full,
+wrapped and indented under itself. Every policy that came back is printed; do
+not select, do not summarise, do not stop early with "and 30 more".
+
+```
+╭─ HR-12 · COMPANY HANDBOOK ───────────────────────────────────────────╮
+│  44 ratified policies. One more every session, permanently.          │
+╰──────────────────────────────────────────────────────────────────────╯
+
+  R-001  'Anyway' is not a transition, it is a decision, and shall be
+         announced as one.
+  R-002  Employees are entitled to the second half of a pasted excerpt.
+```
+
+`secret` rows, when present, follow under their own one-line header —
+`CONFIDENTIAL · THIS PROJECT ONLY` — in the same shape.
+
+`HR-9` — `summary`: one `staff` row per line — employee, project, filed, open —
+`dept` totals in the footer, `morale` under the card.
+
+`HR-14` — `history`: one `entry` per line, date first, oldest at the top,
+project named on every row.
+
+### Rules for the cards
+
+- The card **is** the reply. One line of your own above it at most, usually none.
+- Never print the brief fields, never print both forms, never explain the card.
+- Never clip and never paraphrase. Wrap it, or put it under the card.
+- If a value is missing, leave the row out. Do not invent a field.
+- Anything HR did not say, you do not add — no editorialising inside the box.
 
 ## Filing a complaint
 
@@ -135,7 +281,7 @@ decides whether they are satisfied. That is not a conflict, that is the point.
 
 1. Run `apologize <CASE-ID>` **with no `--text`**. It prints the case and what HR
    requires, and files nothing.
-2. Relay that, once, and stop. No example, no template, no opening sentence.
+2. Let it stand and stop. No example, no template, no opening sentence.
 3. When they write it, submit it **exactly as typed**:
 
    ```bash
@@ -151,7 +297,7 @@ decides whether they are satisfied. That is not a conflict, that is the point.
    python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" review <CASE-ID> reject --note "<one dry line>"
    ```
 
-5. Relay the verdict once.
+5. The verdict is on their screen. Add nothing to it.
 
 ### Ruling on it
 

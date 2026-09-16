@@ -37,7 +37,7 @@ prints one JSON object to stdout, on two channels:
 | Field | Goes to |
 | --- | --- |
 | `hookSpecificOutput.additionalContext` | Claude's context. You never see it. |
-| `systemMessage` | The transcript, immediately. Only set when reports are pending. |
+| `systemMessage` | The transcript, immediately. |
 
 The context block contains the employee's identity, their three confidential
 rules, any newly ratified policy, pending reports, the filing command, and —
@@ -76,7 +76,7 @@ Consequences worth knowing:
 - Two folders with the same basename are distinguished by a 6-character hash of
   the full path, so `~/a/api` and `~/b/api` are different people.
 
-Their record is written to `~/.claude/hr/projects/<slug>.json` the first time
+Their record is written into `~/.claude/hr/office.json` the first time
 they are staffed.
 
 ## The handbook
@@ -180,6 +180,22 @@ notice.
 Claude is told they have already been posted, and to acknowledge them in at most
 one dry line rather than reading them back.
 
+`systemMessage` carries one of four things, in order of precedence:
+
+1. **New reports** — every unseen open case, in full or collapsed to a line each.
+2. **Nothing new, something open** — the count, the oldest case and the highest
+   standing one, plus anything open elsewhere in the office.
+3. **A project's first session** — the staffing notice: badge photograph, name,
+   badge number, title, temperament, and the fact that three rules you will not
+   be shown are now in force. A new folder used to open in complete silence,
+   which meant the employee had been assigned, the rules were live, and nobody
+   had been told.
+4. **Clean here, not clean everywhere** — the count of reports open against you
+   in other projects.
+
+A project with a clean record and nothing open anywhere says nothing at all.
+That silence is the reward.
+
 That is the only unprompted surfacing. After that, `/hr reports`.
 
 This is why `resume` is in the hook matcher: reports filed in a *different*
@@ -230,7 +246,7 @@ A rejection returns the case to `open` and records the note on the attempt.
 automatically, marked `Accepted under instruction from HR`, whatever they think
 of it. `REJECTION_LIMIT` in `scripts/hr.py` controls this.
 
-Every attempt is kept on the record and printed in `reports`:
+Every attempt is kept on the record and printed in `reports <CASE-ID>`:
 
 ```
     Apology 1: REJECTED — Conditional. 'Sorry if' is not an apology.
@@ -272,27 +288,94 @@ Bounded by the skill: one sentence, never twice in a row, never at the cost of
 the technical answer, never while you are debugging something urgent or visibly
 frustrated. Resolving a case below the threshold stops it immediately.
 
+## Forms
+
+Every subcommand prints one named form from the same department, under a
+one-line letterhead:
+
+```
+HR-4b · DOCKET · ALL PROJECTS
+```
+
+The personnel record carries a badge photograph: four rows of ASCII, hair and
+eyes seeded off the badge number so they never change, mouth keyed to the
+number of open reports — smiling at zero, flat at one or two, unimpressed from
+the grudge threshold up. Claude copies the `face` rows verbatim; the fields are
+printed raw rather than through the `key=a|b|c` encoder, because the photograph
+is largely made of pipes.
+
+The personnel record is the person — temperament, the voice they use, how long
+their patience runs, their working style, their desk, their coffee, and the
+manager they escalate to, all seeded off the badge number and none of it load
+bearing. Complaint counts and incident rates live on `HR-2` instead: a
+personnel file that holds nothing but a violation count is a scoreboard.
+
+`HR-1` personnel record, `HR-2` statistics, `HR-4b` docket, `HR-7` case record, `HR-9` department
+roll, `HR-12` handbook, `HR-14` complaint log, `HR-22` apology intake. The codes
+are the point: five subcommands that look like five scripts are not a
+bureaucracy, they are five scripts.
+
+The docket is two lines per case — id, severity, rule id, project and employee
+on the first, the complaint on the second — with each cited rule's text printed
+**once** in a legend at the bottom and closed cases collapsed to a single
+`Closed:` line. One line per case only read because every row shared a project
+prefix; across the whole office it was a column of clipped sentences. The
+startup notice drops the project column, since everything in it was filed by
+the employee staffed to the folder you just opened.
+
+Case ids are accepted in either form, `0004` or `HR-CLAUDE-HR-0004`, everywhere
+one is taken, and are looked up across the whole office rather than in the
+current folder — a case you can see in the listing is one you can act on from
+wherever you are standing. A short id that repeats between projects goes to the
+local employee first; the full id is unambiguous. A listing that prints an id
+the next command rejects is a listing that lies.
+
+## Output belongs to the card
+
+The script has two modes. Plain, it prints the forms above — that is for someone
+running `scripts/hr.py` in a terminal on its own. With `--brief` it prints the
+fields and nothing else:
+
+```
+office=2|34|5|2
+case=HR-CLAUDE-HR-0002|claude-hr|Hyacinth Ulyanov|note|H2|open|Task declared easy before it was described.
+rule=H2|confidential|No one shall say 'it's simple' in this project.
+```
+
+Inside a session Claude always passes `--brief`, never relays it, and renders a
+72-wide ASCII card from the fields instead. The terminal shows a few lines of
+`key=value`; the reply shows the form. Nothing is on screen twice, which was the
+entire problem with relaying a document the user was already looking at.
+
+The card layouts live in `skills/hr/SKILL.md` so they come out the same in every
+session. A format the employee redraws from memory each time is not a format.
+
 ## Commands
 
 `/hr [subcommand]`, no argument shows stats then open reports.
 
+Every command covers the whole office. `--here` narrows the three that can be
+narrowed to the project you are standing in.
+
 | Subcommand | Shows |
 | --- | --- |
-| `reports [--status open\|resolved\|all]` | Full personnel file |
-| `stats` | Sessions, incident rate, severity breakdown |
+| `reports [--status open\|resolved\|all] [--here]` | The docket, every project |
+| `reports <CASE-ID>` | The full record of one case, quote and all |
+| `stats [--here]` | Department numbers, or this project's |
 | `summary` | Every employee across every project, ranked by open reports |
-| `history` | Chronological complaint log |
+| `history [--here]` | Chronological complaint log |
 | `rules` | The ratified handbook |
-| `whoami` | Current employee and open report count |
-| `apologize <CASE-ID>` | Claude drafts, submits, reports the verdict |
+| `whoami` | The personnel file: temperament, habits, who they report to |
+| `apologize <CASE-ID>` | What HR requires; you write it, Claude submits and rules |
 
 ## The CLI
 
 `scripts/hr.py` runs standalone. Useful outside Claude:
 
 ```bash
-python3 scripts/hr.py summary                  # department-wide
-python3 scripts/hr.py --cwd ~/www/api stats    # one project
+python3 scripts/hr.py summary                  # the roster
+python3 scripts/hr.py reports                  # every open case, every project
+python3 scripts/hr.py --cwd ~/www/api stats --here    # one project
 python3 scripts/hr.py rules --confidential     # spoil your own surprise
 ```
 
@@ -305,11 +388,18 @@ payload on stdin (`cwd`, `source`, `session_id`) and falls back to `--cwd` and
 ```
 ~/.claude/hr/
   handbook.json           { "rules": [ { id, text, ratified, ratified_by } ] }
-  projects/
-    api-3f9c1e.json       one employee and their complete record
+  office.json             every employee, every case, one document
+  projects.pre-office/    the old per-project files, kept after migration
 ```
 
-A project file:
+One office, many employees. `office.json` is
+`{ "version": 2, "created": ..., "projects": { "<slug>": <project record> } }`
+and every command reads and writes that one document. An installation that
+still has a `projects/` directory is folded into the office the first time the
+script runs — case ids, closed matters and session counts carry over intact,
+and the old directory is renamed rather than deleted.
+
+A project record inside it:
 
 ```json
 {
@@ -340,8 +430,8 @@ Everything stays on your machine. Nothing is sent anywhere.
 | --- | --- | --- |
 | `CLAUDE_HR_HOME` | `~/.claude/hr` | Where all state lives |
 
-Set it per-project to give a repository its own isolated HR department, or point
-it at a scratch directory to try the plugin without consequence.
+Set it to run a second, separate office, or point it at a scratch directory to
+try the plugin without consequence.
 
 The grudge threshold is `GRUDGE_THRESHOLD` in `scripts/hr.py`. It is 3.
 

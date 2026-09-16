@@ -61,9 +61,11 @@ Needs `python3`. Nothing else.
 
 | | |
 | --- | --- |
+| **One HR office** | One department, one docket. Every employee, every project, every case in a single record you can read from anywhere. |
 | **You get an employee** | Same folder, same person, forever. `~/www/api` is always Consuelo Halloway, Interim Custodian of the Build, and she remembers. |
 | **Three rules stay secret** | You are not told what they are. You find out by breaking one. |
 | **The handbook grows** | Every new session ratifies one more company policy, permanently, across all your projects. |
+| **You are introduced** | The first session in a new folder posts the staffing notice — photograph, badge, temperament. After that they only speak up when there is paperwork. |
 | **Reports surface once** | At the start of a later session, and then never again on their own. After that you have to go looking. |
 | **Apologies must be formal** | HR checks the form. The employee weighs the words. Passing the first is not passing the second. |
 | **Grudges are real** | Three open reports and the employee staffed to that project stops letting it go. |
@@ -106,7 +108,9 @@ stops the moment you apologize.
 | Command | What it shows |
 | --- | --- |
 | `/hr` | your file: stats, then open reports |
-| `/hr reports` | the full personnel record |
+| `/hr reports` | the docket — every open case, every project |
+| `/hr reports --here` | only the ones filed against this project |
+| `/hr reports <CASE-ID>` | the full record of one case, from any folder |
 | `/hr summary` | every employee, every project, ranked by grudge |
 | `/hr rules` | the handbook so far |
 | `/hr whoami` | who you are actually working with |
