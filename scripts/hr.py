@@ -207,15 +207,23 @@ SEV_BY_DIGIT = {str(n + 1): k for n, (k, _) in enumerate(D.SEVERITIES)}
 
 
 def unblob(raw):
-    """Decode a base64 payload, tolerating one that was never encoded."""
+    """Decode a base64 payload. Anything that did not decode becomes "".
+
+    A blob that arrived unencoded, truncated or mangled is dropped rather than
+    filed verbatim — a complaint whose reason reads like a base64 string is
+    worse than one with no reason at all, which the caller fills in from the
+    rule it was filed against.
+    """
     if not raw:
         return ""
     try:
         text = base64.b64decode(raw + "=" * (-len(raw) % 4), validate=True).decode("utf-8")
     except Exception:
-        return raw
+        return ""
+    if not text:
+        return ""
     printable = sum(1 for c in text if c.isprintable() or c.isspace())
-    return text if text and printable / len(text) > 0.9 else raw
+    return text if printable / len(text) > 0.9 else ""
 
 
 def implied_reason(rule_text):
