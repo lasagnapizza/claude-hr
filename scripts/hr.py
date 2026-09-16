@@ -668,7 +668,7 @@ def cmd_history(args):
         return 0
     print(header(f"COMPLAINT HISTORY — {proj['employee']['name']}"))
     for c in proj["complaints"]:
-        mark = "OPEN" if c["status"] == "open" else "closed"
+        mark = {"open": "OPEN", "pending": "REVIEW"}.get(c["status"], "closed")
         print(f"  {c['filed'][:16]}  {mark:<6}  {c['id']}  {c['severity']:<9} {c['reason']}")
     if not proj["complaints"]:
         print("  Clean record.")
