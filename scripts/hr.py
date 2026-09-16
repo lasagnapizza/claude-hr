@@ -533,8 +533,9 @@ def cmd_stats(args):
         print(f"    {sev:<10} {by_sev.get(sev, 0)}")
     rate = (len(cases) / proj["sessions"]) if proj["sessions"] else 0
     print(f"  Incident rate    {rate:.2f} reports per session")
-    flav = emp["flavor"]
-    print(f"\n  {flav[0].upper() + flav[1:]}.")
+    flav = emp.get("flavor") or ""
+    if flav:
+        print(f"\n  {flav[0].upper() + flav[1:]}.")
     return 0
 
 
