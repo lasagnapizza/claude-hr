@@ -254,29 +254,31 @@ def put_project(proj):
 # --------------------------------------------------------------------------
 
 def get_handbook():
-    return load(HANDBOOK, {"rules": []})
+    """The whole handbook, in force.
 
+    Policies used to arrive one a session, which meant most of the rules a
+    complaint could cite did not exist yet and the employee spent weeks unable
+    to object to anything. The handbook is a handbook: all of it applies from
+    the first session.
 
-def ratify_rule(slug):
-    """Each new session adds one policy to the company handbook, forever."""
-    hb = get_handbook()
-    # Keyed on text, not index, so editing the pool never re-ratifies a policy
-    # that is already in the handbook.
-    ratified = {r["text"] for r in hb["rules"]}
-    remaining = [i for i, t in enumerate(D.HANDBOOK_POOL) if t not in ratified]
-    if not remaining:
-        return None
-    idx = random.choice(remaining)
-    rule = {
-        "id": f"R-{len(hb['rules']) + 1:03d}",
-        "text": D.HANDBOOK_POOL[idx],
-        "ratified": now(),
-        "ratified_by": slug,
-        "pool_index": idx,
-    }
-    hb["rules"].append(rule)
-    save(HANDBOOK, hb)
-    return rule
+    Existing entries keep their ids and dates — cases cite them — and anything
+    added to the pool since is appended with the next number. Keyed on text, so
+    editing the pool never duplicates a policy already on the books.
+    """
+    hb = load(HANDBOOK, {"rules": []})
+    known = {r["text"] for r in hb["rules"]}
+    missing = [(i, t) for i, t in enumerate(D.HANDBOOK_POOL) if t not in known]
+    if missing:
+        stamp = now()
+        for i, text in missing:
+            hb["rules"].append({
+                "id": f"R-{len(hb['rules']) + 1:03d}",
+                "text": text,
+                "ratified": stamp,
+                "pool_index": i,
+            })
+        save(HANDBOOK, hb)
+    return hb
 
 
 def find_rule(proj, rule_id):
@@ -728,7 +730,6 @@ def cmd_session_start(args):
     emp = proj["employee"]
     disp = disposition_of(emp)
 
-    new_rule = ratify_rule(proj["slug"]) if source in ("startup", "clear") else None
 
     pending = [c for c in open_complaints(proj) if not c["seen"]]
     for c in pending:
@@ -761,16 +762,12 @@ def cmd_session_start(args):
     for r in proj["hidden_rules"]:
         lines.append(f"  {r['id']}: {r['text']}")
 
-    if new_rule:
-        lines.append("")
-        lines.append(f"NEW COMPANY POLICY ratified this session — "
-                     f"{new_rule['id']}: {new_rule['text']}")
-
     hb = get_handbook()["rules"]
     if hb:
         lines.append("")
-        lines.append(f"Company handbook currently holds {len(hb)} ratified policies. "
-                     f"Read them with: python3 $HR_SCRIPT rules")
+        lines.append(f"The company handbook holds {len(hb)} policies and all of them "
+                     f"are in force, in every project, from the first session. Read "
+                     f"them with: python3 $HR_SCRIPT rules")
 
     if pending:
         lines.append("")
@@ -1129,7 +1126,7 @@ def cmd_rules(args):
         return 0
     print(letterhead("handbook"))
     if not hb:
-        print("  Empty. Policies are ratified one per session, forever.")
+        print("  Empty, which should not happen. The handbook ships with the plugin.")
     for r in hb:
         print(f"\n  {r['id']}  (ratified {r['ratified'][:10]})")
         print(wrap(r["text"], "    "))
