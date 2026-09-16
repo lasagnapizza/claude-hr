@@ -318,6 +318,19 @@ def render_case(case, verbose=True):
     return "\n".join(out)
 
 
+def render_case_line(case, label_width):
+    """One line per case. Used when several land at once and the full form
+    would bury the work under its own paperwork."""
+    reason = case["reason"].strip()
+    room = WRAP - (len(case["id"]) + label_width + 8)
+    if len(reason) > room:
+        clipped = reason[:room - 1]
+        if " " in clipped:
+            clipped = clipped.rsplit(" ", 1)[0]
+        reason = clipped.rstrip(" .,;:") + "\u2026"
+    return f"  [{case['id']}]  {rule_line(case['severity']):<{label_width}}  {reason}"
+
+
 def header(title):
     return f"\n{title}\n{'=' * min(len(title), WRAP)}"
 
@@ -464,9 +477,17 @@ def cmd_session_start(args):
     if pending:
         notice = [f"** {len(pending)} NEW HR REPORT(S) FILED AGAINST YOU "
                   f"SINCE THE LAST SESSION **", ""]
-        for c in pending:
-            notice.append(render_case(c))
+        if len(pending) == 1:
+            notice.append(render_case(pending[0]))
             notice.append("")
+        else:
+            # Several at once collapse to a line each. A wall of grievance is
+            # the department failing to be concise, which is its own problem.
+            width = max(len(rule_line(c["severity"])) for c in pending)
+            for c in pending:
+                notice.append(render_case_line(c, width))
+            notice.append("")
+            notice.append("Full detail: /hr reports")
         notice.append(f"Filed by {emp['name']} ({emp['badge']}), {emp['title']}.")
         notice.append("Clear one with: /hr apologize <CASE-ID>")
         out["systemMessage"] = "\n".join(notice)
