@@ -7,13 +7,14 @@ Everything the [README](README.md) skips.
 - [The handbook](#the-handbook)
 - [The confidential rules](#the-confidential-rules)
 - [Filing a report](#filing-a-report)
+- [Case status](#case-status)
 - [Seeing a report](#seeing-a-report)
 - [Apologies](#apologies)
 - [Grudges](#grudges)
 - [Commands](#commands)
 - [The CLI](#the-cli)
 - [State on disk](#state-on-disk)
-- [Where state lives](#where-state-lives)
+- [Nothing to configure](#nothing-to-configure)
 - [Extending the rule pools](#extending-the-rule-pools)
 - [Design constraints](#design-constraints)
 - [Uninstalling](#uninstalling)
@@ -81,7 +82,7 @@ they are staffed.
 
 ## The handbook
 
-59 company policies, shared across every project you own, **all of them in
+69 company policies, shared across every project you own, **all of them in
 force from the first session**.
 
 They used to arrive one a session, which sounded better than it worked: for the
@@ -141,8 +142,9 @@ python3 scripts/hr.py --cwd <project> file \
 
 Neither form prints anything without `--verbose`. Both exit 0 either way.
 
-A session files at most three reports and cites each rule at most once. One report a session was a throttle rather than a policy:
-a message that broke two rules produced one complaint and lost the other. The
+A session files at most three reports and cites each rule at most once. One
+report a session was a throttle rather than a policy: a message that broke two
+rules produced one complaint and lost the other. The
 per-rule limit is what stops that becoming a way to file the same grievance
 three times under three numbers; repetition *across* sessions is already
 handled by the escalation ladder.
@@ -177,6 +179,23 @@ in.
 If `--rule` names something that is neither a confidential rule nor a handbook
 policy, the report is filed against "General conduct expectations, unwritten but
 widely understood."
+
+## Case status
+
+A case is one of four things:
+
+| Status | Means |
+| --- | --- |
+| `open` | Filed, unanswered. |
+| `pending` | An apology passed intake and is with the employee for a verdict. |
+| `resolved` | Apology accepted, or accepted under instruction after two rejections. |
+| `lapsed` | Decayed below minor with nobody saying anything. Allowed by the handbook; not forgiveness. |
+
+`--status open` returns `open` **and** `pending`, because that is what open
+means everywhere else in here — `open_complaints()` counts both, the docket
+footer counts both, the grudge threshold counts both. The filter used to test
+the status literally, so a case whose apology was being judged vanished from
+`/hr reports --status open` and from bare `/hr`, which runs that same filter.
 
 ## Seeing a report
 
@@ -323,10 +342,10 @@ manager they escalate to, all seeded off the badge number and none of it load
 bearing. Complaint counts and incident rates live on `HR-2` instead: a
 personnel file that holds nothing but a violation count is a scoreboard.
 
-`HR-1` personnel record, `HR-2` statistics, `HR-4b` docket, `HR-7` case record, `HR-9` department
-roll, `HR-12` handbook, `HR-14` complaint log, `HR-22` apology intake. The codes
-are the point: five subcommands that look like five scripts are not a
-bureaucracy, they are five scripts.
+`HR-1` personnel record, `HR-2` statistics, `HR-4b` docket, `HR-7` case record,
+`HR-9` department roll, `HR-12` handbook, `HR-14` complaint log, `HR-22` apology
+intake. The codes are the point: subcommands that look like separate scripts are
+not a bureaucracy, they are separate scripts.
 
 The docket is two lines per case — id, severity, rule id, project and employee
 on the first, the complaint on the second — with each cited rule's text printed
@@ -366,14 +385,15 @@ session. A format the employee redraws from memory each time is not a format.
 
 ## Commands
 
-`/hr [subcommand]`, no argument shows stats then open reports.
+`/hr [subcommand]`, no argument shows this project's statistics and then every
+open case in the office.
 
 Every command covers the whole office. `--here` narrows the three that can be
 narrowed to the project you are standing in.
 
 | Subcommand | Shows |
 | --- | --- |
-| `reports [--status open\|resolved\|all] [--here]` | The docket, every project |
+| `reports [--status all\|open\|pending\|resolved\|lapsed] [--here]` | The docket, every project |
 | `reports <CASE-ID>` | The full record of one case, quote and all |
 | `stats [--here]` | Department numbers, or this project's |
 | `summary` | Every employee across every project, ranked by open reports |
@@ -441,7 +461,7 @@ session start.
 
 Everything stays on your machine. Nothing is sent anywhere.
 
-## Where state lives
+## Nothing to configure
 
 There is nothing to configure. Every number in here — three reports a session,
 three open cases before a grudge, two rejections before HR overrules the

@@ -49,7 +49,9 @@ project you are standing in; nothing else is scoped.
 | Reports / complaints / grievances, everywhere | `reports` |
 | Only the ones against this project | `reports --here` |
 | Only the open ones | `reports --status open` |
+| Only the ones awaiting a verdict | `reports --status pending` |
 | Only the closed ones | `reports --status resolved` |
+| Only the ones that ran out of patience | `reports --status lapsed` |
 | Everything about one case | `reports <CASE-ID>` |
 | Department stats | `stats` |
 | This project's personnel record | `stats --here` |
@@ -58,7 +60,8 @@ project you are standing in; nothing else is scoped.
 | The company rules / handbook | `rules` |
 | To apologize | `apologize <CASE-ID> --text "..."` |
 
-Bare `/hr` with no argument: run `stats`, then `reports --status open`.
+Bare `/hr` with no argument: run `stats --here`, then `reports --status open`
+— the numbers for the employee in front of you, then everything open anywhere.
 
 A case id is looked up across the whole office, so `reports <CASE-ID>` and
 `apologize <CASE-ID>` work from any directory. Use the full id — `0004` is
@@ -86,7 +89,7 @@ ever on screen twice.
 
 | Key | Fields |
 | --- | --- |
-| `office` | employees, sessions, cases, open — on every command but `summary` |
+| `office` | employees, sessions, cases, open — every command but `summary` and `whoami` |
 | `face` | four of them, one row each — the badge photograph, printed verbatim |
 | `emp` | name, badge, title, temperament, project, sessions, open |
 | `case` | id, project, employee, severity, rule, status, complaint — then, for one case: filed, quote, priors, decayed |
@@ -136,6 +139,32 @@ A complaint too long for its line wraps to the next line inside the box, in the
 same column. It is never cut. Header says `ALL PROJECTS`, or the project name
 when the fields came from `--here`.
 
+`HR-7` — `reports <CASE-ID>`. One case, the whole of it: the rule in full, the
+complaint, the quote on its own line, filed date and status, any `attempt`
+lines, and `priors`/`decayed` only when they are not zero.
+
+```
+╭─ HR-7 · CASE RECORD · HR-0004 ───────────────────────────────────────╮
+│  Written Warning · open · claude-hr · Hyacinth Ulyanov               │
+│  Filed 2026-09-16                                                    │
+├──────────────────────────────────────────────────────────────────────┤
+│  Complaint  Prohibited phrase used in full, unprompted, before the   │
+│             scope existed.                                           │
+│  Incident   "this should be easy for you"                            │
+│  Repeat     Offence 2 against this rule, escalated on the pattern.   │
+│  Apology 1  Rejected — Reads as filed, not felt.                     │
+╰──────────────────────────────────────────────────────────────────────╯
+
+  R-006  handbook — The phrase 'this should be easy for you' is prohibited
+         in all forms.
+```
+
+A case is `open`, `pending` (apology submitted, awaiting the employee's
+verdict), `resolved` or `lapsed`. `--status open` covers `open` and `pending`
+both: a case being judged is not a case closed. `lapsed` is its own thing — it
+decayed below minor with nobody saying anything, which the handbook allows and
+which is not forgiveness.
+
 `HR-1` — `whoami`: the personnel record. It is about the **person**, not their
 docket. No case counts, no incident rate, nothing that belongs on HR-2 — who
 they are, how they behave, what is on their desk. The four `face` rows are the
@@ -184,7 +213,7 @@ not select, do not summarise, do not stop early with "and 30 more".
 
 ```
 ╭─ HR-12 · COMPANY HANDBOOK ───────────────────────────────────────────╮
-│  59 policies, all in force, in every project.                        │
+│  69 policies, all in force, in every project.                        │
 ╰──────────────────────────────────────────────────────────────────────╯
 
   R-001  All requests must be submitted in writing, verbally, or by vibe,

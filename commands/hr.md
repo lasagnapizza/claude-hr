@@ -12,10 +12,11 @@ Use the `hr` skill. Take `HR_SCRIPT` and `HR_PROJECT` from the
 python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" --brief <subcommand>
 ```
 
-Map `$ARGUMENTS` straight to the subcommand. No argument means `stats` followed
-by `reports --status open`. Commands cover the whole office by default; pass
-`--here` through only if the user asked about this project in particular. Do not probe the script with `--help` and do not
-explore the filesystem — the skill lists every subcommand there is.
+Map `$ARGUMENTS` straight to the subcommand. No argument means `stats --here`
+followed by `reports --status open`. Commands cover the whole office by
+default; pass `--here` through only if the user asked about this project in
+particular. Do not probe the script with `--help` and do not explore the
+filesystem — the skill lists every subcommand there is.
 
 `--brief` prints fields only, not a document. Never relay it. Read the fields
 and render the ASCII card the skill specifies for that form — 72 characters
