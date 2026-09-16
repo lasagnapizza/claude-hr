@@ -76,7 +76,31 @@ def office():
     global _OFFICE
     if _OFFICE is None:
         _OFFICE = load(OFFICE, None) or open_office()
+        if _OFFICE.get("version", 2) < 3 and renumber(_OFFICE):
+            save(OFFICE, _OFFICE)
     return _OFFICE
+
+
+def renumber(o):
+    """One office, one sequence.
+
+    Case numbers used to restart at 0001 in every project, so `0004` meant
+    four different things and the short form had to be disambiguated by where
+    you happened to be standing. There is one docket now, so there is one
+    sequence: cases are renumbered in the order they were filed, and the id
+    they were filed under is kept on the record so an old reference still
+    resolves.
+    """
+    was = o.get("version", 2)
+    o["version"] = 3
+    pairs = sorted(((pr, c) for pr in o["projects"].values() for c in pr["complaints"]),
+                   key=lambda pc: (pc[1]["filed"], pc[0]["slug"], pc[1]["id"]))
+    for n, (_pr, c) in enumerate(pairs, 1):
+        new = f"HR-{n:04d}"
+        if c["id"] != new:
+            c.setdefault("legacy_id", c["id"])
+            c["id"] = new
+    return pairs or was < 3
 
 
 def save_office():
@@ -344,8 +368,16 @@ def apply_decay(proj):
     return changed
 
 
-def next_case_id(proj):
-    return f"HR-{proj['slug'].rsplit('-', 1)[0].upper()[:10]}-{len(proj['complaints']) + 1:04d}"
+def next_case_id():
+    """The next number in the office's one sequence. Never reused: it counts
+    from the highest on file, not from how many are on file."""
+    highest = 0
+    for pr in all_projects():
+        for c in pr["complaints"]:
+            tail = c["id"].rsplit("-", 1)[-1]
+            if tail.isdigit():
+                highest = max(highest, int(tail))
+    return f"HR-{highest + 1:04d}"
 
 
 SEV_KEYS = [k for k, _label in D.SEVERITIES]
@@ -397,7 +429,7 @@ def file_complaint(proj, rule_id, reason, incident, severity, session):
     filed_severity = severity
     severity, priors = escalate(proj, rule_id, severity)
     case = {
-        "id": next_case_id(proj),
+        "id": next_case_id(),
         "rule_id": (rule_id or "GENERAL").upper(),
         "rule_text": text,
         "unmatched_rule": unmatched,
@@ -539,7 +571,7 @@ def letterhead(form, emp=None, proj=None, extra=""):
 
 
 def short_id(case):
-    """In-project, the HR-CLAUDE-HR- prefix is the same on every row."""
+    """The number alone. Office-wide it is unique, so it is enough."""
     return case["id"].rsplit("-", 1)[-1]
 
 
@@ -555,7 +587,8 @@ def find_case_anywhere(token, cwd=None):
     if not want:
         return None, None
     hits = [(pr, c) for pr in all_projects() for c in pr["complaints"]
-            if c["id"].upper() == want or short_id(c) == want.zfill(4)]
+            if want in (c["id"].upper(), (c.get("legacy_id") or "").upper())
+            or short_id(c) == want.zfill(4)]
     if not hits:
         return None, None
     if len(hits) > 1 and cwd:
@@ -1275,7 +1308,7 @@ def cmd_whoami(args):
 def cmd_history(args):
     projs = scoped_projects(args)
     pairs = sorted(((p, c) for p in projs for c in p["complaints"]),
-                   key=lambda pc: pc[1]["filed"])
+                   key=lambda pc: (pc[1]["filed"], pc[1]["id"]))
     if args.brief:
         print(brief_office())
         if args.here and projs:
