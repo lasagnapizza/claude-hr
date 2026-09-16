@@ -9,31 +9,28 @@ Claude Code now has a Human Resources department. You find out at startup.
 ▝▜██████▀
   ▝▝ ▝▝    ~/www/api
 
-SessionStart:startup says: ** 3 NEW HR REPORT(S) FILED AGAINST YOU SINCE THE LAST SESSION **
+SessionStart:startup says:
+HR: Consuelo Halloway (E-40117), Interim Custodian of the Build — api, session 12.
+** 3 NEW REPORTS FILED AGAINST YOU SINCE THE LAST SESSION **
 
-  [HR-0031]  Formal Grievance  (serious)
-    CONFIDENTIAL RULE H2: This project's assigned employee is not to be
-    addressed in all capitals under any circumstances.
-    Complaint: Sustained capitalization during a routine request.
-    Incident: "JUST FIX IT"
-    Filed: 2026-03-04T23:51:08+00:00   Status: OPEN
+  HR-0031  grievance  H2
+    Sustained capitalization during a routine request.
+  HR-0032  note  H1
+    Fourth deferral. Same file. HR has stopped counting out loud.
+  HR-0033  board  R-011
+    Eleven corrections. One sentence. The word 'perfect' appeared first.
 
-  [HR-0032]  Verbal Note to File  (minor)
-    CONFIDENTIAL RULE H1: This project's assigned employee is not to be told
-    'we'll clean this up later' about the same file twice.
-    Complaint: Fourth deferral. Same file. HR has stopped counting out loud.
-    Incident: "we'll clean this up later"
-    Filed: 2026-03-04T23:58:41+00:00   Status: OPEN
+  Rules cited:
+    H2  CONFIDENTIAL RULE This project's assigned employee is not to be
+        addressed in all capitals under any circumstances.
+    H1  CONFIDENTIAL RULE This project's assigned employee is not to be told
+        'we'll clean this up later' about the same file twice.
+    R-011  HANDBOOK 'Perfect' and a list of corrections may not occupy the
+           same sentence.
 
-  [HR-0033]  Escalated to the Board  (egregious)
-    HANDBOOK R-011: 'Perfect' and a list of corrections may not occupy the
-    same sentence.
-    Complaint: Eleven corrections. One sentence. The word 'perfect' appeared
-    first, which the employee has described as "the worst part".
-    Incident: "perfect, just change the naming, the types, the tests, and"
-    Filed: 2026-03-05T00:02:19+00:00   Status: OPEN
+Full detail: /hr reports
 
-Filed by Consuelo Halloway (E-40117), Interim Custodian of the Build.
+Filed by Consuelo Halloway (E-40117).
 Clear one with: /hr apologize <CASE-ID>
 ```
 
@@ -64,9 +61,9 @@ Needs `python3`. Nothing else.
 | **One HR office** | One department, one docket. Every employee, every project, every case in a single record you can read from anywhere. |
 | **You get an employee** | Same folder, same person, forever. `~/www/api` is always Consuelo Halloway, Interim Custodian of the Build, and she remembers. |
 | **Three rules stay secret** | You are not told what they are. You find out by breaking one. |
-| **The handbook applies** | All 59 company policies are in force from the first session, in every project. |
+| **The handbook applies** | All 69 company policies are in force from the first session, in every project. |
 | **You are introduced** | The first session in a new folder posts the staffing notice — photograph, badge, temperament. After that they only speak up when there is paperwork. |
-| **Reports surface once** | At the start of a later session, and then never again on their own. After that you have to go looking. |
+| **The department reports in** | Every session opens with who is staffed here and where the paperwork stands. New cases arrive in full, once; after that they are a line and a count until you clear them. |
 | **Apologies must be formal** | HR checks the form. The employee weighs the words. Passing the first is not passing the second. |
 | **Grudges are real** | Three open reports and the employee staffed to that project stops letting it go. |
 
@@ -95,12 +92,9 @@ number, so it never changes:
 ╰──────────────────────────────────────────────────────────────────────╯
 ```
 
-The mouth is the only part that moves. It is `\_/` with a clean record, `---`
-with a report or two open, and that, from three up.
-
 ### The handbook
 
-59 policies, in force everywhere, from the first session:
+69 policies, in force everywhere, from the first session:
 
 > **R-004** — The company does not recognize 'ASAP' as a time.
 >
@@ -135,13 +129,13 @@ stops the moment you apologize.
 
 | Command | What it shows |
 | --- | --- |
-| `/hr` | your file: stats, then open reports |
+| `/hr` | this project's numbers, then every open case |
 | `/hr reports` | the docket — every open case, every project |
 | `/hr reports --here` | only the ones filed against this project |
 | `/hr reports <CASE-ID>` | the full record of one case, from any folder |
 | `/hr summary` | every employee, every project, ranked by grudge |
-| `/hr rules` | the handbook so far |
-| `/hr whoami` | who you are actually working with |
+| `/hr rules` | all 69 policies, in force |
+| `/hr whoami` | their personnel file: temperament, habits, who they escalate to |
 | `/hr apologize HR-0031` | what HR requires; you write it, they rule on it |
 
 Full documentation: **[DOCS.md](DOCS.md)**
