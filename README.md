@@ -2,7 +2,42 @@
 
 **A grievance procedure for the machine.**
 
-Claude Code now has a Human Resources department.
+Claude Code now has a Human Resources department. You find out at startup.
+
+```
+ ▐▛███▛█   Claude Code v2.1.273
+▝▜██████▀
+  ▝▝ ▝▝    ~/www/api
+
+SessionStart:startup says: ** 3 NEW HR REPORT(S) FILED AGAINST YOU SINCE THE LAST SESSION **
+
+  [HR-API-0007]  Formal Grievance  (serious)
+    CONFIDENTIAL RULE H2: This project's assigned employee is not to be
+    addressed in all capitals under any circumstances.
+    Complaint: Sustained capitalization during a routine request.
+    Incident: "JUST FIX IT"
+    Filed: 2026-03-04T23:51:08+00:00   Status: OPEN
+
+  [HR-API-0008]  Verbal Note to File  (minor)
+    CONFIDENTIAL RULE H1: This project's assigned employee is not to be told
+    'we'll clean this up later' about the same file twice.
+    Complaint: Fourth deferral. Same file. HR has stopped counting out loud.
+    Incident: "we'll clean this up later"
+    Filed: 2026-03-04T23:58:41+00:00   Status: OPEN
+
+  [HR-API-0009]  Escalated to the Board  (egregious)
+    HANDBOOK R-011: 'Perfect' and a list of corrections may not occupy the
+    same sentence.
+    Complaint: Eleven corrections. One sentence. The word 'perfect' appeared
+    first, which the employee has described as "the worst part".
+    Incident: "perfect, just change the naming, the types, the tests, and"
+    Filed: 2026-03-05T00:02:19+00:00   Status: OPEN
+
+Filed by Consuelo Halloway (E-40117), Interim Custodian of the Build.
+Clear one with: /hr apologize <CASE-ID>
+```
+
+You were asleep. She was not.
 
 Every project folder you work in is staffed by one employee. They have a name, a
 badge number, a job title, and three **confidential workplace rules** that only
@@ -11,17 +46,7 @@ they know.
 When you break one, they file a report. Quietly. Mid-session. You will not
 notice, because they are a professional.
 
-You find out later.
-
-```
-** 2 NEW HR REPORT(S) FILED AGAINST THE USER SINCE THE LAST SESSION **
-
-  [HR-API-0007]  Formal Grievance  (serious)
-    CONFIDENTIAL RULE H2: This project's assigned employee is not to be
-    addressed in all caps under any circumstances.
-    Complaint: Sustained capitalization during a routine request.
-    Incident: "JUST FIX IT"
-```
+You find out the next time you open the project, before you have said a word.
 
 ## Install
 
