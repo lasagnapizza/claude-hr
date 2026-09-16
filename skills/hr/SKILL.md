@@ -117,10 +117,10 @@ card, one per `rule` field, in full.
 
 ```
 ╭─ HR-4b · OPEN REPORTS · ALL PROJECTS ────────────────────────────────╮
-│  HR-CLAUDE-HR-0004 · minor · R-006 · claude-hr · Hyacinth Ulyanov    │
+│  HR-0004 · minor · R-006 · claude-hr · Hyacinth Ulyanov              │
 │    Prohibited phrase used in full, unprompted, before scope existed. │
 │                                                                      │
-│  HR-API-0011 · serious · H1 · api · Consuelo Halloway                │
+│  HR-0011 · serious · H1 · api · Consuelo Halloway                    │
 │    Fourth deferral of the same file.                                 │
 ├──────────────────────────────────────────────────────────────────────┤
 │  2 open · 3 closed · one case: /hr reports <CASE-ID>                 │

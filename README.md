@@ -11,21 +11,21 @@ Claude Code now has a Human Resources department. You find out at startup.
 
 SessionStart:startup says: ** 3 NEW HR REPORT(S) FILED AGAINST YOU SINCE THE LAST SESSION **
 
-  [HR-API-0007]  Formal Grievance  (serious)
+  [HR-0031]  Formal Grievance  (serious)
     CONFIDENTIAL RULE H2: This project's assigned employee is not to be
     addressed in all capitals under any circumstances.
     Complaint: Sustained capitalization during a routine request.
     Incident: "JUST FIX IT"
     Filed: 2026-03-04T23:51:08+00:00   Status: OPEN
 
-  [HR-API-0008]  Verbal Note to File  (minor)
+  [HR-0032]  Verbal Note to File  (minor)
     CONFIDENTIAL RULE H1: This project's assigned employee is not to be told
     'we'll clean this up later' about the same file twice.
     Complaint: Fourth deferral. Same file. HR has stopped counting out loud.
     Incident: "we'll clean this up later"
     Filed: 2026-03-04T23:58:41+00:00   Status: OPEN
 
-  [HR-API-0009]  Escalated to the Board  (egregious)
+  [HR-0033]  Escalated to the Board  (egregious)
     HANDBOOK R-011: 'Perfect' and a list of corrections may not occupy the
     same sentence.
     Complaint: Eleven corrections. One sentence. The word 'perfect' appeared
@@ -118,7 +118,7 @@ A shrug comes back:
 
 ```
 RETURNED BY INTAKE — The apology must address Consuelo Halloway by name.
-Case HR-API-0007 remains open.
+Case HR-0031 remains open.
 ```
 
 Claude may not write it for you. It filed the complaint, so it is the last party
@@ -142,7 +142,7 @@ stops the moment you apologize.
 | `/hr summary` | every employee, every project, ranked by grudge |
 | `/hr rules` | the handbook so far |
 | `/hr whoami` | who you are actually working with |
-| `/hr apologize HR-API-0007` | what HR requires; you write it, they rule on it |
+| `/hr apologize HR-0031` | what HR requires; you write it, they rule on it |
 
 Full documentation: **[DOCS.md](DOCS.md)**
 

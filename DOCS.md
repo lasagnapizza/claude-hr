@@ -170,8 +170,10 @@ Severity ladder:
 | `serious` | Formal Grievance |
 | `egregious` | Escalated to the Board |
 
-Case ids are `HR-<PROJECT>-<NNNN>`, numbered per project from 0001, including
-resolved cases. Numbers are never reused.
+Case ids are `HR-<NNNN>`, one sequence for the whole office, counted from the
+highest on file rather than from how many are on file. Numbers are never
+reused, and a number means one case no matter which project you are standing
+in.
 
 If `--rule` names something that is neither a confidential rule nor a ratified
 policy, the report is filed against "General conduct expectations, unwritten but
@@ -217,7 +219,7 @@ words. Passing the first does not pass the second.
 ### Stage one — intake
 
 ```
-python3 scripts/hr.py apologize HR-API-0007 --text "..."
+python3 scripts/hr.py apologize HR-0031 --text "..."
 ```
 
 The text is validated. All four must hold:
@@ -279,8 +281,8 @@ to show you what HR requires and to submit your words verbatim.
 the command yourself:
 
 ```bash
-python3 scripts/hr.py apologize HR-API-0007 --stdin <<'EOF'
-Hyacinth, I am sorry about HR-API-0007. ...
+python3 scripts/hr.py apologize HR-0031 --stdin <<'EOF'
+Hyacinth, I am sorry about HR-0031. ...
 EOF
 ```
 
@@ -331,12 +333,15 @@ prefix; across the whole office it was a column of clipped sentences. The
 startup notice drops the project column, since everything in it was filed by
 the employee staffed to the folder you just opened.
 
-Case ids are accepted in either form, `0004` or `HR-CLAUDE-HR-0004`, everywhere
-one is taken, and are looked up across the whole office rather than in the
-current folder — a case you can see in the listing is one you can act on from
-wherever you are standing. A short id that repeats between projects goes to the
-local employee first; the full id is unambiguous. A listing that prints an id
-the next command rejects is a listing that lies.
+Case ids are accepted as `HR-0004` or bare `0004`, everywhere one is taken, and
+are looked up across the whole office — a case you can see in the listing is one
+you can act on from wherever you are standing. They used to restart at 0001 in
+every project, so `0004` meant four different things and the short form had to
+be disambiguated by where you were standing; there is one docket now, so there
+is one sequence. Offices numbered the old way are renumbered in filing order on
+first read, with the original id kept on the record so an old reference still
+resolves. A listing that prints an id the next command rejects is a listing
+that lies.
 
 ## Output belongs to the card
 
@@ -346,7 +351,7 @@ fields and nothing else:
 
 ```
 office=2|34|5|2
-case=HR-CLAUDE-HR-0002|claude-hr|Hyacinth Ulyanov|note|H2|open|Task declared easy before it was described.
+case=HR-0002|claude-hr|Hyacinth Ulyanov|note|H2|open|Task declared easy before it was described.
 rule=H2|confidential|No one shall say 'it's simple' in this project.
 ```
 
@@ -416,7 +421,7 @@ A project record inside it:
   "employee": { "name": "...", "first": "...", "title": "...",
                 "flavor": "...", "badge": "E-40219" },
   "hidden_rules": [ { "id": "H1", "text": "...", "pool_index": 4 } ],
-  "complaints": [ { "id": "HR-API-0001", "rule_id": "H1", "rule_text": "...",
+  "complaints": [ { "id": "HR-0014", "rule_id": "H1", "rule_text": "...",
                     "confidential_rule": true, "reason": "...", "incident": "...",
                     "severity": "standard", "filed": "...", "session": "...",
                     "status": "open", "seen": false, "resolution": null } ],
