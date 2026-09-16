@@ -377,6 +377,11 @@ case=HR-0002|claude-hr|Hyacinth Ulyanov|note|H2|open|Task declared easy before i
 rule=H2|confidential|No one shall say 'it's simple' in this project.
 ```
 
+Every subcommand has a brief form, including `apologize` and `review` — the two
+that used to print a full document to the terminal and then have it rendered a
+second time in the reply. Intake and verdict come back as a single `intake=` or
+`verdict=` line, because a verdict is a sentence and not a form.
+
 Inside a session Claude always passes `--brief`, never relays it, and renders a
 72-wide ASCII card from the fields instead. The terminal shows a few lines of
 `key=value`; the reply shows the form. Nothing is on screen twice, which was the

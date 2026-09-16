@@ -1130,13 +1130,15 @@ def cmd_rules(args):
 def cmd_apologize(args):
     proj, case = find_case_anywhere(args.case, args.cwd)
     if case is None:
-        print(f"No such case: {args.case}")
+        print(bl("error", "nocase", args.case) if args.brief
+              else f"No such case: {args.case}")
         return 1
-    if case["status"] == "resolved":
-        print(f"{case['id']} is already resolved. HR does not reopen closed matters.")
-        return 0
-    if case["status"] == "lapsed":
-        print(f"{case['id']} lapsed on its own. There is nothing left to apologise to.")
+    if case["status"] in ("resolved", "lapsed"):
+        shut = ("is already resolved. HR does not reopen closed matters."
+                if case["status"] == "resolved"
+                else "lapsed on its own. There is nothing left to apologise to.")
+        print(bl("closed", case["id"], case["status"]) if args.brief
+              else f"{case['id']} {shut}")
         return 0
 
     text = args.text
@@ -1145,6 +1147,18 @@ def cmd_apologize(args):
     if text is None:
         # No apology supplied. Print what HR needs and stop. The words have to
         # come from the person who caused the problem.
+        if args.brief:
+            print(brief_employee(proj))
+            print(brief_case(proj, case, full=True))
+            print("\n".join(brief_rules([case])))
+            for n, a in enumerate(case.get("attempts", []), 1):
+                print(bl("attempt", n, a.get("verdict", "pending"), a.get("note", "")))
+            print(bl("needs", "60 characters", "an actual apology",
+                     f"{proj['employee']['first']} by name",
+                     f"{case['id']} or what it was about"))
+            print(bl("conflict", "HR does not accept an apology drafted by the party "
+                                 "that filed the complaint."))
+            return 2
         print(letterhead("apology", proj["employee"], proj, extra=case["id"]))
         print()
         print(render_case(case))
@@ -1163,6 +1177,9 @@ def cmd_apologize(args):
 
     ok, why = evaluate_apology(proj, case, text)
     if not ok:
+        if args.brief:
+            print(bl("intake", "returned", case["id"], why))
+            return 1
         print(f"RETURNED BY INTAKE — {why}")
         print(f"Case {case['id']} remains open.")
         return 1
@@ -1170,6 +1187,10 @@ def cmd_apologize(args):
     case["attempts"].append({"at": now(), "apology": text, "verdict": "pending"})
     case["status"] = "pending"
     put_project(proj)
+    if args.brief:
+        print(bl("intake", "forwarded", case["id"], proj["employee"]["name"],
+                 len(case["attempts"]), REJECTION_LIMIT + 1))
+        return 0
     print(f"FORWARDED — {case['id']} passed intake.")
     print(wrap(f"{proj['employee']['name']} has been given the apology and will "
                f"decide whether to accept it. Attempt "
@@ -1181,10 +1202,12 @@ def cmd_review(args):
     """The employee's own verdict. Intake checks the form; this weighs the words."""
     proj, case = find_case_anywhere(args.case, args.cwd)
     if case is None:
-        print(f"No such case: {args.case}")
+        print(bl("error", "nocase", args.case) if args.brief
+              else f"No such case: {args.case}")
         return 1
     if case["status"] != "pending":
-        print(f"{case['id']} is not awaiting review (status: {case['status']}).")
+        print(bl("error", "notpending", case["id"], case["status"]) if args.brief
+              else f"{case['id']} is not awaiting review (status: {case['status']}).")
         return 1
     attempts = case.setdefault("attempts", [])
     emp = proj["employee"]
@@ -1196,6 +1219,10 @@ def cmd_review(args):
         case["status"] = "open"
         put_project(proj)
         left = REJECTION_LIMIT + 1 - len(attempts)
+        if args.brief:
+            print(bl("verdict", "rejected", case["id"], emp["name"],
+                     attempts[-1]["note"], left))
+            return 1
         print(f"NOT ACCEPTED — {case['id']} remains open.")
         print(wrap(f"{emp['name']}: {attempts[-1]['note']}"))
         print(wrap(f"{plural(left, 'further attempt')} before HR instructs "
@@ -1210,6 +1237,11 @@ def cmd_review(args):
                           "attempts": len(attempts)}
     put_project(proj)
     opens = len(open_complaints(proj))
+    if args.brief:
+        print(bl("verdict", "accepted", case["id"], emp["name"],
+                 "under instruction" if forced and args.verdict == "reject" else "",
+                 opens))
+        return 0
     print(f"ACCEPTED — {case['id']} closed.")
     if forced and args.verdict == "reject":
         print(wrap(f"{emp['name']} did not find it convincing. HR has recorded the "

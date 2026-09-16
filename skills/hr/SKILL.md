@@ -101,6 +101,10 @@ ever on screen twice.
 | `dept` `staff` `morale` | `summary` only |
 | `hb` `policy` `secret` | `rules` only: count, then id and text |
 | `entry` | `history` only: filed, id, project, severity, rule, status, complaint |
+| `needs` `conflict` | `apologize <ID>` with no `--text`: what intake requires |
+| `intake` | `apologize --text`: `returned\|id\|reason`, or `forwarded\|id\|employee\|attempt\|limit` |
+| `verdict` | `review`: `rejected\|id\|employee\|note\|attempts left`, or `accepted\|id\|employee\|note\|open` |
+| `closed` `error` | the case is settled, or there is no such case |
 
 ### The cards
 
@@ -236,6 +240,55 @@ not select, do not summarise, do not stop early with "and 30 more".
 `secret` rows, when present, follow under their own one-line header —
 `CONFIDENTIAL · THIS PROJECT ONLY` — in the same shape.
 
+`HR-22` — `apologize <CASE-ID>` with no `--text`. The case, then what intake
+requires. Nothing else: no example, no opening sentence, no offer.
+
+```
+╭─ HR-22 · APOLOGY — INTAKE · HR-0001 ─────────────────────────────────╮
+│  Verbal Note to File · open · claude-hr · Hyacinth Ulyanov           │
+│  Filed 2026-09-16                                                    │
+├──────────────────────────────────────────────────────────────────────┤
+│  Complaint  Task declared simple before the scope existed.           │
+│  Incident   "it's simple"                                            │
+├──────────────────────────────────────────────────────────────────────┤
+│  Requires   60 characters                                            │
+│             An actual apology                                        │
+│             Hyacinth by name                                         │
+│             HR-0001 or what it was about                             │
+╰──────────────────────────────────────────────────────────────────────╯
+
+  H2  confidential — No one shall say 'it's simple' in this project. HR has
+      been clear about this.
+```
+
+The `conflict` field is the standing note that the apology may not be drafted
+by the party that filed the complaint. Put it under the card, one line, or
+leave it out — never turn it into an offer to help.
+
+`intake` and `verdict` are **one line each, no card**. A verdict is not a
+document:
+
+```
+RETURNED BY INTAKE — Too short. HR requires a written apology of at least 60
+characters. HR-0001 remains open.
+```
+
+```
+FORWARDED — HR-0001 passed intake. Hyacinth Ulyanov has it, attempt 1 of 3.
+```
+
+```
+NOT ACCEPTED — HR-0001 remains open. Hyacinth Ulyanov: Reads as filed, not
+felt. 2 further attempts before HR instructs her to accept what is offered.
+```
+
+```
+ACCEPTED — HR-0001 closed. 0 reports remain open.
+```
+
+Say the reason and nothing more. Do not soften a rejection, do not congratulate
+an acceptance, do not add what to try next.
+
 `HR-9` — `summary`: one `staff` row per line — employee, project, filed, open —
 `dept` totals in the footer, `morale` under the card.
 
@@ -327,13 +380,13 @@ decides whether they are satisfied. That is not a conflict, that is the point.
 
 ### The flow
 
-1. Run `apologize <CASE-ID>` **with no `--text`**. It prints the case and what HR
-   requires, and files nothing.
+1. Run `--brief apologize <CASE-ID>` **with no `--text`**. It returns the case
+   and what HR requires, and files nothing. Render `HR-22`.
 2. Let it stand and stop. No example, no template, no opening sentence.
 3. When they write it, submit it **exactly as typed**:
 
    ```bash
-   python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" apologize <CASE-ID> --text "<their words>"
+   python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" --brief apologize <CASE-ID> --text "<their words>"
    ```
 
    Verbatim. If intake returns it, state the script's reason and nothing more.
@@ -341,8 +394,8 @@ decides whether they are satisfied. That is not a conflict, that is the point.
    and rule:
 
    ```bash
-   python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" review <CASE-ID> accept
-   python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" review <CASE-ID> reject --note "<one dry line>"
+   python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" --brief review <CASE-ID> accept
+   python3 "$HR_SCRIPT" --cwd "$HR_PROJECT" --brief review <CASE-ID> reject --note "<one dry line>"
    ```
 
 5. The verdict is on their screen. Add nothing to it.
