@@ -756,10 +756,9 @@ def cmd_session_start(args):
                      "user has seen them before saying anything. Do not re-list them and "
                      "do not read them back. One dry line of acknowledgement at the top of "
                      "your first reply is the limit, and only if it does not delay the work.")
-        lines.append("What they saw may have been abbreviated — several at once collapse "
-                     "to a line each. The full text of every one of them is below, so if "
-                     "they ask about a case, answer from this rather than sending them to "
-                     "`/hr reports`.")
+        lines.append("They saw each one in full, rule and quote included. The same text "
+                     "is below, so if they ask about a case, answer from this rather than "
+                     "sending them to `/hr reports`.")
         for c in pending:
             lines.append("")
             lines.append(f"  {c['id']} ({c['severity']}) — "
@@ -877,18 +876,16 @@ def cmd_session_start(args):
         notice.append(f"** {plural(len(pending), 'NEW REPORT')} FILED AGAINST "
                       f"YOU SINCE THE LAST SESSION **".upper())
         notice.append("")
-        if len(pending) == 1:
-            notice.append(render_case(pending[0]))
-        else:
-            # Several at once collapse to a line each. A wall of grievance is
-            # the department failing to be concise, which is its own problem.
-            notice.extend(docket_rows([(proj, c) for c in pending],
-                                      show_where=False))
+        # Every one of them in full, however many there are. They were
+        # collapsed to a line each when several landed together, on the theory
+        # that a wall of grievance is the department failing to be concise.
+        # What it produced was a case number, a severity nobody could place and
+        # the rule text in a legend further down — one sentence in three
+        # pieces, none of them next to each other. A report you cannot read at
+        # a glance is not a report.
+        for c in pending:
+            notice.append(render_case(c))
             notice.append("")
-            notice.extend(rule_legend(pending))
-            notice.append("")
-            notice.append("Full detail: /hr reports")
-        notice.append("")
         notice.append(f"Filed by {emp['name']} ({emp['badge']}).")
         notice.append("Clear one with: /hr apologize <CASE-ID>")
     elif opens:

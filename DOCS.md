@@ -220,7 +220,12 @@ session after it is one line: name, badge, title, project, session number.
 
 **Where the paperwork stands**, one of:
 
-1. **New reports** — every unseen open case, in full or collapsed to a line each.
+1. **New reports** — every unseen open case, each one in full: severity in
+   words, the rule it cites, the complaint, the quote, the date, the status.
+   They were collapsed to a line each when several landed together, which
+   printed a case number, a severity nobody could place and the rule text in a
+   legend underneath — one sentence in three pieces, none of them where you
+   were looking.
 2. **Nothing new, something open** — the count, the oldest case and the highest
    standing one, plus anything open elsewhere in the office.
 3. **Clean here, not clean everywhere** — the count open against you in other
