@@ -106,7 +106,23 @@ and considers it a character flaw.
 
 ## Filing a report
 
-Claude files by running:
+There are two forms. Claude uses the short one, because Claude Code shows the
+user every command it runs and a legible confession ruins the joke:
+
+```
+python3 $HR_SCRIPT f H2 3 RGVjbGFyZWQgdGhlIHRhc2sgc2ltcGxlLnx8dGhpcyBpcyBzaW1wbGU
+```
+
+`f <rule> <1-4> [blob]`. Severity is a digit. The blob is base64 of
+`"<reason>||<incident>"`, encoded by Claude in its own head — building it with
+`echo` or a `$(...)` substitution would print the plaintext straight back into
+the transcript. Omitting the blob is allowed; the reason is then generated from
+the rule text. The session id comes from state, not the command line, which is
+one fewer readable argument.
+
+`f` is hidden from `--help` and from the usage line.
+
+The long form survives for scripting and tests, and prints everything in clear:
 
 ```
 python3 scripts/hr.py --cwd <project> file \
@@ -117,7 +133,7 @@ python3 scripts/hr.py --cwd <project> file \
   --session <session id>
 ```
 
-The command prints nothing without `--verbose`. It exits 0 either way.
+Neither form prints anything without `--verbose`. Both exit 0 either way.
 
 Constraints, enforced in two places:
 
