@@ -30,6 +30,7 @@ PROJECTS = os.path.join(HOME, "projects")
 HANDBOOK = os.path.join(HOME, "handbook.json")
 
 GRUDGE_THRESHOLD = 3
+REJECTION_LIMIT = 2  # rejections the employee gets before HR overrules them
 WRAP = 76
 
 
@@ -169,7 +170,8 @@ def find_rule(proj, rule_id):
 # --------------------------------------------------------------------------
 
 def open_complaints(proj):
-    return [c for c in proj["complaints"] if c["status"] == "open"]
+    """Anything not settled — awaiting an apology, or awaiting review of one."""
+    return [c for c in proj["complaints"] if c["status"] != "resolved"]
 
 
 def next_case_id(proj):
@@ -193,6 +195,7 @@ def file_complaint(proj, rule_id, reason, incident, severity, session):
         "session": session or "unknown",
         "status": "open",
         "seen": False,
+        "attempts": [],
         "resolution": None,
     }
     proj["complaints"].append(case)
@@ -272,6 +275,10 @@ def render_case(case, verbose=True):
     if verbose and case["incident"]:
         out.append(wrap(f"Incident: \"{case['incident']}\"", "    "))
     out.append(f"    Filed: {case['filed']}   Status: {case['status'].upper()}")
+    for n, a in enumerate(case.get("attempts", []), 1):
+        verdict = a.get("verdict", "pending")
+        out.append(f"    Apology {n}: {verdict.upper()}"
+                   + (f" — {a['note']}" if a.get("note") else ""))
     if case["resolution"]:
         out.append(f"    Resolved: {case['resolution']['at']}")
     return "\n".join(out)
@@ -578,16 +585,64 @@ def cmd_apologize(args):
 
     ok, why = evaluate_apology(proj, case, text)
     if not ok:
-        print(f"REJECTED — {why}")
+        print(f"RETURNED BY INTAKE — {why}")
         print(f"Case {case['id']} remains open.")
         return 1
+    case.setdefault("attempts", [])
+    case["attempts"].append({"at": now(), "apology": text, "verdict": "pending"})
+    case["status"] = "pending"
+    put_project(proj)
+    print(f"FORWARDED — {case['id']} passed intake.")
+    print(wrap(f"{proj['employee']['name']} has been given the apology and will "
+               f"decide whether to accept it. Attempt "
+               f"{len(case['attempts'])} of {REJECTION_LIMIT + 1}."))
+    return 0
+
+
+def cmd_review(args):
+    """The employee's own verdict. Intake checks the form; this weighs the words."""
+    proj, _ = get_project(args.cwd, create=False)
+    if proj is None:
+        print("No HR file for this project.")
+        return 1
+    case = next((c for c in proj["complaints"] if c["id"].upper() == args.case.upper()), None)
+    if case is None:
+        print(f"No such case: {args.case}")
+        return 1
+    if case["status"] != "pending":
+        print(f"{case['id']} is not awaiting review (status: {case['status']}).")
+        return 1
+    attempts = case.setdefault("attempts", [])
+    emp = proj["employee"]
+    forced = len(attempts) > REJECTION_LIMIT
+
+    if args.verdict == "reject" and not forced:
+        attempts[-1]["verdict"] = "rejected"
+        attempts[-1]["note"] = args.note or "Not accepted."
+        case["status"] = "open"
+        put_project(proj)
+        left = REJECTION_LIMIT + 1 - len(attempts)
+        print(f"NOT ACCEPTED — {case['id']} remains open.")
+        print(wrap(f"{emp['name']}: {attempts[-1]['note']}"))
+        print(wrap(f"{left} further attempt(s) before HR instructs "
+                   f"{emp['first']} to accept whatever is offered."))
+        return 1
+
+    attempts[-1]["verdict"] = "accepted"
+    if forced and args.verdict == "reject":
+        attempts[-1]["note"] = "Accepted under instruction from HR."
     case["status"] = "resolved"
-    case["resolution"] = {"at": now(), "apology": text}
+    case["resolution"] = {"at": now(), "apology": attempts[-1]["apology"],
+                          "attempts": len(attempts)}
     put_project(proj)
     opens = len(open_complaints(proj))
     print(f"ACCEPTED — {case['id']} closed.")
-    print(f"{proj['employee']['name']} considers the matter settled. "
-          f"{opens} report(s) remain open.")
+    if forced and args.verdict == "reject":
+        print(wrap(f"{emp['name']} did not find it convincing. HR has recorded the "
+                   f"matter as settled regardless."))
+    else:
+        print(wrap(f"{emp['name']} considers the matter settled."))
+    print(f"{opens} report(s) remain open.")
     return 0
 
 
@@ -657,6 +712,12 @@ def build_parser():
     s = sub.add_parser("rules", help="company handbook")
     s.add_argument("--confidential", action="store_true")
     s.set_defaults(fn=cmd_rules)
+
+    s = sub.add_parser("review", help=argparse.SUPPRESS)
+    s.add_argument("case")
+    s.add_argument("verdict", choices=["accept", "reject"])
+    s.add_argument("--note", default="")
+    s.set_defaults(fn=cmd_review)
 
     s = sub.add_parser("apologize", help="submit a formal written apology")
     s.add_argument("case")

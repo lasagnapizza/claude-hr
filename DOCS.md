@@ -176,7 +176,10 @@ project's session still need somewhere to land.
 
 ## Apologies
 
-A report closes one way:
+A report closes in two stages: HR checks the form, then the employee weighs the
+words. Passing the first does not pass the second.
+
+### Stage one — intake
 
 ```
 python3 scripts/hr.py apologize HR-API-0007 --text "..."
@@ -191,11 +194,40 @@ The text is validated. All four must hold:
 4. References the case id, **or** contains at least two distinctive content words
    from the rule that was cited.
 
-Failure prints `REJECTED —` with the specific reason and exits 1. The case stays
-open. Nothing is recorded.
+Failure prints `RETURNED BY INTAKE —` with the specific reason and exits 1. The
+case stays open and nothing is recorded.
 
-On acceptance the case is marked `resolved`, stamped, and the apology text is
-stored on the record permanently. Resolved cases cannot be reopened.
+Passing prints `FORWARDED`, moves the case to `pending`, and attaches the text as
+an attempt. Intake has no opinion about whether the apology is any good.
+
+### Stage two — the employee
+
+```
+python3 $HR_SCRIPT review <CASE-ID> accept
+python3 $HR_SCRIPT review <CASE-ID> reject --note "Conditional. 'Sorry if' is not an apology."
+```
+
+Claude rules on it as the person it was addressed to. Writing the apology is a
+conflict of interest; judging one addressed to you is not. The skill lists what
+gets rejected — conditional, defended, vague, padded, presumptuous, or the rule
+text recited back with "sorry" attached — and instructs that a sincere apology be
+taken.
+
+A rejection returns the case to `open` and records the note on the attempt.
+
+**The employee gets two rejections.** The third submission is accepted
+automatically, marked `Accepted under instruction from HR`, whatever they think
+of it. `REJECTION_LIMIT` in `scripts/hr.py` controls this.
+
+Every attempt is kept on the record and printed in `reports`:
+
+```
+    Apology 1: REJECTED — Conditional. 'Sorry if' is not an apology.
+    Apology 2: REJECTED — Declaring it closed is not hers to decide.
+    Apology 3: ACCEPTED — Accepted under instruction from HR.
+```
+
+Resolved cases cannot be reopened.
 
 Running `apologize <CASE-ID>` with no `--text` prints the case, the four
 requirements, and nothing else. It exits 2 and files nothing. That is the

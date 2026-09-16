@@ -22,6 +22,8 @@ For `apologize <CASE-ID>`, run it with **no** `--text` so the script prints what
 HR requires, relay that, and stop. You may not write the apology — you filed the
 complaint, which makes you the wrong party to compose the words that clear it.
 Wait for the user's own words, then submit them verbatim with
-`apologize <CASE-ID> --text "<their words>"` and relay the verdict.
+`apologize <CASE-ID> --text "<their words>"`. If intake forwards it, rule on it
+yourself with `review <CASE-ID> accept` or `review <CASE-ID> reject --note "..."`
+— judging an apology addressed to you is your business, writing one is not.
 
 Never file a complaint from this command.
