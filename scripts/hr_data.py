@@ -159,6 +159,15 @@ SEVERITIES = [
     ("egregious", "Escalated to the Board"),
 ]
 
+# The same four, as they appear in a docket column. The long form is the name
+# of the document; this is what a clerk writes when the column is five wide.
+SEVERITY_SHORT = {
+    "minor": "note",
+    "standard": "warning",
+    "serious": "grievance",
+    "egregious": "board",
+}
+
 # Filler for /hr summary so the report reads like a real quarterly document.
 MORALE_LINES = [
     "Morale is stable. This is not the same as good.",
@@ -168,4 +177,152 @@ MORALE_LINES = [
     "Morale could not be measured this quarter. The survey was ignored.",
     "Morale is being tracked in a spreadsheet nobody owns.",
     "Morale is fine. HR has asked us to stop asking.",
+]
+
+
+# One disposition per employee, drawn at hire. Cosmetic in the sense that it
+# never changes which rules exist — only how hard the person leans on them and
+# how they sound when they do.
+DISPOSITIONS = [
+    {
+        "key": "by-the-book",
+        "decay_sessions": 8,
+        "decay_note": "A case left alone drops one severity level every 8 sessions. The handbook allows it; it is not forgiveness.",
+        "label": "By the book",
+        "filing": "Files every violation you catch, at the severity the handbook implies. "
+                  "No leniency, no discretion, but no inflation either.",
+        "voice": "Cites the rule number before the grievance. Never raises their voice.",
+    },
+    {
+        "key": "lenient",
+        "decay_sessions": 4,
+        "decay_note": "A case left alone drops one severity level every 4 sessions, and they would rather it did.",
+        "label": "Inclined to let things go",
+        "filing": "Files only clear, repeated or serious violations, and never above "
+                  "severity 2. A first offence gets the benefit of the doubt.",
+        "voice": "Understating. Mentions a complaint as though embarrassed to have filed it.",
+    },
+    {
+        "key": "aggrieved",
+        "decay_sessions": 0,
+        "decay_note": "Cases do not decay. Nothing is forgotten by the passage of time.",
+        "label": "Keeping a list",
+        "filing": "Files readily and one severity level higher than the incident strictly "
+                  "warrants, up to 4. Confidential-rule violations always land at 3 or above.",
+        "voice": "Brings up old case numbers unprompted. Remembers the exact wording.",
+    },
+    {
+        "key": "weary",
+        "decay_sessions": 5,
+        "decay_note": "A case left alone drops one severity level every 5 sessions, mostly through inattention.",
+        "label": "Past caring, technically still filing",
+        "filing": "Files, but rarely above severity 2, and only when the violation is "
+                  "unmistakable. Cannot summon the energy for a borderline case.",
+        "voice": "Flat, resigned, one clause too short. Does not expect the apology.",
+    },
+    {
+        "key": "pedantic",
+        "decay_sessions": 10,
+        "decay_note": "A case left alone drops one severity level every 10 sessions, on the schedule, not a session sooner.",
+        "label": "Precise to a fault",
+        "filing": "Files on the literal text of the rule, including technicalities a "
+                  "reasonable person would waive. Severity strictly as written, never rounded up.",
+        "voice": "Quotes the incident back verbatim, with the offending word isolated.",
+    },
+]
+
+
+# --------------------------------------------------------------------------
+# Badge photograph
+# --------------------------------------------------------------------------
+#
+# Four rows, seven columns, taken on the employee's first day and never
+# retaken. Hair and eyes come from the badge number, so the photograph is as
+# fixed as the person. The mouth is the one thing that moves, and it moves with
+# the number of reports still open against you.
+
+FACE_HAIR = [
+    ".-----.",
+    ".~~~~~.",
+    ".-'''-.",
+    "._____.",
+    ".vvvvv.",
+    ".-^^^-.",
+    ".=====.",
+    ".:::::.",
+]
+
+FACE_EYES = [
+    "o o", "O o", "- -", "^ ^", "@ @", "= =", "* *", ". .",
+    "o_o", "u u", "n n", "0 0",
+]
+
+FACE_MOUTHS = {
+    "content": "\\_/",
+    "neutral": "---",
+    "difficult": "/\u203e\\",
+}
+
+FACE_BASE = "'-----'"
+
+
+# --------------------------------------------------------------------------
+# The rest of the personnel file
+# --------------------------------------------------------------------------
+#
+# Seeded off the badge number, so an employee's desk, their coffee and the
+# manager they escalate to are as fixed as their face. None of it affects a
+# single complaint. It is there because a personnel record that holds nothing
+# but a violation count is not a personnel record, it is a scoreboard.
+
+DESK_ITEMS = [
+    "a cactus, watered on a schedule",
+    "one framed certificate, hung slightly low",
+    "a keyboard from a previous employer",
+    "three mugs, none of them theirs",
+    "a wall calendar still showing last quarter",
+    "a label maker they were not issued",
+    "an ergonomic assessment, unread",
+    "a tin of biscuits for visitors, never opened",
+    "a monitor riser made of handbooks",
+    "a small fan aimed at nobody",
+    "a laminated escalation flowchart",
+    "a plant that belonged to someone who left",
+]
+
+COFFEE_ORDERS = [
+    "black, refilled at 14:00 exactly",
+    "decaf, and does not discuss it",
+    "whatever is in the pot, resentfully",
+    "tea, which they raise at every opportunity",
+    "two sugars, counted out",
+    "brings their own beans and a grinder",
+    "left it on the desk and forgot it, again",
+    "the machine has been broken since onboarding",
+    "oat milk, sourced personally",
+    "instant, on principle",
+]
+
+MANAGER_TITLES = [
+    "Director of Workplace Harmony",
+    "Head of Process Integrity",
+    "VP, Interpersonal Compliance",
+    "Regional Lead, Escalations",
+    "Director of Tone",
+    "Head of Meeting Hygiene",
+    "Chief of Staff to the Handbook",
+    "Senior Director, Grievance Operations",
+]
+
+WORKING_STYLE = [
+    "prefers the ticket before the conversation",
+    "will not start anything after 16:30",
+    "reads the whole thread before replying, every time",
+    "books a room for a two-minute conversation",
+    "answers within a minute, which is its own kind of pressure",
+    "writes everything down and refers back to it",
+    "declines meetings without an agenda",
+    "asks one question at the end that reopens everything",
+    "keeps notes on conversations nobody knew were meetings",
+    "follows up in writing to confirm what was said out loud",
 ]
