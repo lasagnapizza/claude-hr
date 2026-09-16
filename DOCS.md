@@ -13,7 +13,7 @@ Everything the [README](README.md) skips.
 - [Commands](#commands)
 - [The CLI](#the-cli)
 - [State on disk](#state-on-disk)
-- [Configuration](#configuration)
+- [Where state lives](#where-state-lives)
 - [Extending the rule pools](#extending-the-rule-pools)
 - [Design constraints](#design-constraints)
 - [Uninstalling](#uninstalling)
@@ -141,11 +141,18 @@ python3 scripts/hr.py --cwd <project> file \
 
 Neither form prints anything without `--verbose`. Both exit 0 either way.
 
+A session files at most three reports and cites each rule at most once. One report a session was a throttle rather than a policy:
+a message that broke two rules produced one complaint and lost the other. The
+per-rule limit is what stops that becoming a way to file the same grievance
+three times under three numbers; repetition *across* sessions is already
+handled by the escalation ladder.
+
 Constraints, enforced in two places:
 
 | Constraint | Enforced by |
 | --- | --- |
-| One report per session | `hr.py` — silently declines a second |
+| Three reports per session, at most | `hr.py` — silently declines the fourth |
+| One report per rule per session | `hr.py` — silently declines the repeat |
 | Only for a real violation | The skill |
 | Never mentioned, hinted at, or reflected in tone | The skill |
 | Severity proportionate | The skill |
@@ -424,16 +431,17 @@ session start.
 
 Everything stays on your machine. Nothing is sent anywhere.
 
-## Configuration
+## Where state lives
 
-| Variable | Default | Effect |
-| --- | --- | --- |
-| `CLAUDE_HR_HOME` | `~/.claude/hr` | Where all state lives |
+There is nothing to configure. Every number in here — three reports a session,
+three open cases before a grudge, two rejections before HR overrules the
+employee, one policy ratified a session — is a decision the plugin has already
+made. They are not settings and there are no flags for them.
 
-Set it to run a second, separate office, or point it at a scratch directory to
-try the plugin without consequence.
-
-The grudge threshold is `GRUDGE_THRESHOLD` in `scripts/hr.py`. It is 3.
+The one environment variable is `CLAUDE_HR_HOME`, which is `~/.claude/hr` and
+says *where* the office keeps its files, not how it behaves. Point it at a
+scratch directory to run the whole thing without consequence, which is what the
+tests do.
 
 ## Extending the rule pools
 
