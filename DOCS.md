@@ -32,10 +32,16 @@ All of them call one script, `scripts/hr.py`, which is stdlib-only Python and th
 single source of truth for state.
 
 The hook is registered on `SessionStart` with matcher `startup|resume|clear`. It
-prints a `<human-resources>` block to stdout, which Claude Code injects into the
-session context. You never see it. It contains the employee's identity, their
-three confidential rules, any newly ratified policy, pending reports, the filing
-command, and — above a certain threshold — instructions to hold a grudge.
+prints one JSON object to stdout, on two channels:
+
+| Field | Goes to |
+| --- | --- |
+| `hookSpecificOutput.additionalContext` | Claude's context. You never see it. |
+| `systemMessage` | The transcript, immediately. Only set when reports are pending. |
+
+The context block contains the employee's identity, their three confidential
+rules, any newly ratified policy, pending reports, the filing command, and —
+above a certain threshold — instructions to hold a grudge.
 
 It opens with two absolute paths:
 
@@ -166,8 +172,13 @@ widely understood."
 ## Seeing a report
 
 Each report carries a `seen` flag. The session-start hook lists every unseen open
-report, marks them seen, and instructs Claude to relay them at the top of its
-first reply — briefly, dryly, then on with the work.
+report, marks them seen, and posts them to the transcript itself via
+`systemMessage` — so they land the moment the session opens, not whenever you
+happen to say something first. A notice that waits for you to say hello is not a
+notice.
+
+Claude is told they have already been posted, and to acknowledge them in at most
+one dry line rather than reading them back.
 
 That is the only unprompted surfacing. After that, `/hr reports`.
 
