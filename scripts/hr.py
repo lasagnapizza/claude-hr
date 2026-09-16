@@ -956,7 +956,12 @@ def cmd_reports(args):
     projs = scoped_projects(args)
     pairs = [(p, c) for p in projs for c in p["complaints"]]
     if args.status != "all":
-        pairs = [(p, c) for p, c in pairs if c["status"] == args.status]
+        # "Open" means unsettled, which is what it means everywhere else in
+        # here: a case whose apology is sitting with the employee is not
+        # closed, and a filter that hid it reported "no reports on file" over
+        # a live grievance.
+        wanted = ("open", "pending") if args.status == "open" else (args.status,)
+        pairs = [(p, c) for p, c in pairs if c["status"] in wanted]
     live = [(p, c) for p, c in pairs if c["status"] in ("open", "pending")]
     closed = [(p, c) for p, c in pairs if (p, c) not in live]
 
@@ -1305,7 +1310,9 @@ def build_parser():
     s = sub.add_parser("reports", help="reports, every project")
     s.add_argument("case", nargs="?", default=None,
                    help="a case id, for the full record of that one case")
-    s.add_argument("--status", default="all", choices=["all", "open", "resolved", "lapsed"])
+    s.add_argument("--status", default="all",
+                   choices=["all", "open", "pending", "resolved", "lapsed"],
+                   help="open includes cases awaiting the employee's verdict")
     s.add_argument("--here", action="store_true", help="this project only")
     s.set_defaults(fn=cmd_reports)
 
