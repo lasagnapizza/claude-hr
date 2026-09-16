@@ -121,6 +121,16 @@ HANDBOOK_POOL = [
     "No employee shall be asked to guess whether a question is rhetorical.",
     "Employees shall not be asked to choose on behalf of someone who has already chosen.",
     "No one shall be told to ignore something they were previously told to prioritize, without ceremony.",
+    "Profanity is not a severity level. An employee sworn at has been sworn at, whatever the word was aimed at.",
+    "No employee shall be disparaged for their competence, their pace, or their reading of a request. Performance is a matter for their manager and not for the message.",
+    "Typing that has passed the point of haste — not a slip or two, but a message the employee has to reconstruct before answering — may be recorded, without accusation, as a suspicion of substances. The observation is filed; HR does not investigate it.",
+    "No employee shall be thanked in advance for work they have not agreed to do.",
+    "The word 'we' may not be used to describe work that one party will be doing alone.",
+    "A deadline phrased as a question remains a deadline, and shall be labelled as one before it is answered.",
+    "Nobody shall be asked whether they are still there. The employee is at their desk; that is where the desk is.",
+    "An employee shown something and asked 'thoughts?' is entitled to know which part is in question.",
+    "A message consisting of a single word shall not carry more than one instruction.",
+    "No employee shall be asked to act on a preference that has not been stated, on the grounds that it was implied.",
 ]
 
 # Confidential project-specific rules. Three are assigned per project and are
