@@ -184,7 +184,7 @@ not select, do not summarise, do not stop early with "and 30 more".
 
 ```
 ╭─ HR-12 · COMPANY HANDBOOK ───────────────────────────────────────────╮
-│  44 ratified policies. One more every session, permanently.          │
+│  59 policies, all in force, in every project.                        │
 ╰──────────────────────────────────────────────────────────────────────╯
 
   R-001  'Anyway' is not a transition, it is a decision, and shall be

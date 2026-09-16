@@ -40,7 +40,7 @@ prints one JSON object to stdout, on two channels:
 | `systemMessage` | The transcript, immediately. |
 
 The context block contains the employee's identity, their three confidential
-rules, any newly ratified policy, pending reports, the filing command, and —
+rules, the size of the handbook, pending reports, the filing command, and —
 above a certain threshold — instructions to hold a grudge.
 
 It opens with two absolute paths:
@@ -81,18 +81,19 @@ they are staffed.
 
 ## The handbook
 
-A single pool of 59 company policies, shared across every project you own.
+59 company policies, shared across every project you own, **all of them in
+force from the first session**.
 
-**One is ratified per session.** Only on `startup` and `clear` — a `resume` is
-the same session continuing, so it ratifies nothing and does not increment the
-session counter.
+They used to arrive one a session, which sounded better than it worked: for the
+first weeks of a project most of the rules a complaint could cite did not exist
+yet, and the employee could not object to things the handbook plainly
+prohibited. A handbook you are issued a page at a time is not a handbook.
 
-Ratification is keyed on rule **text**, not pool index, so editing
-`HANDBOOK_POOL` can never re-ratify a policy already in your handbook. Once the
-pool is exhausted, no further policies are ratified; existing ones remain.
-
-Policies are permanent, numbered `R-001` upward in ratification order, and
-timestamped. Read them with `/hr rules`.
+The file is written on first read and kept in step with `HANDBOOK_POOL`
+afterwards. Matching is keyed on rule **text**, not pool index, so existing
+policies keep their id and date — cases cite them — and anything added to the
+pool later is appended with the next number. Policies are permanent, numbered
+`R-001` upward, and timestamped. Read them with `/hr rules`.
 
 ## The confidential rules
 
@@ -435,7 +436,8 @@ Everything stays on your machine. Nothing is sent anywhere.
 
 There is nothing to configure. Every number in here — three reports a session,
 three open cases before a grudge, two rejections before HR overrules the
-employee, one policy ratified a session — is a decision the plugin has already
+employee, the whole handbook in force from day one — is a decision the plugin
+has already
 made. They are not settings and there are no flags for them.
 
 The one environment variable is `CLAUDE_HR_HOME`, which is `~/.claude/hr` and
@@ -446,8 +448,8 @@ tests do.
 ## Extending the rule pools
 
 Both pools are plain lists in `scripts/hr_data.py`. Append and you are done —
-ratification is text-keyed, so adding policies never disturbs existing
-handbooks.
+matching is text-keyed, so a new policy is added to an existing handbook with
+the next number and nothing already on the books moves.
 
 Two rules for writing rules:
 

@@ -64,7 +64,7 @@ Needs `python3`. Nothing else.
 | **One HR office** | One department, one docket. Every employee, every project, every case in a single record you can read from anywhere. |
 | **You get an employee** | Same folder, same person, forever. `~/www/api` is always Consuelo Halloway, Interim Custodian of the Build, and she remembers. |
 | **Three rules stay secret** | You are not told what they are. You find out by breaking one. |
-| **The handbook grows** | Every new session ratifies one more company policy, permanently, across all your projects. |
+| **The handbook applies** | All 59 company policies are in force from the first session, in every project. |
 | **You are introduced** | The first session in a new folder posts the staffing notice — photograph, badge, temperament. After that they only speak up when there is paperwork. |
 | **Reports surface once** | At the start of a later session, and then never again on their own. After that you have to go looking. |
 | **Apologies must be formal** | HR checks the form. The employee weighs the words. Passing the first is not passing the second. |
@@ -100,7 +100,7 @@ with a report or two open, and that, from three up.
 
 ### The handbook
 
-One policy per session, forever, across every project:
+59 policies, in force everywhere, from the first session:
 
 > **R-004** — The company does not recognize 'ASAP' as a time.
 >
@@ -110,7 +110,7 @@ One policy per session, forever, across every project:
 >
 > **R-038** — Instructions containing the word 'etc.' shall be returned for completion.
 
-There are 59 waiting. You will meet them one at a time.
+You will meet them the way you meet any handbook: by breaking one.
 
 ### Apologies
 
